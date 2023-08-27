@@ -49,3 +49,4 @@ bld/
 [Ll]og/
 [Ll]ogs/
 !eventmesh-runtime/bin/*.sh
+**/org/apache/eventmesh/connector/jdbc/antlr4/autogeneration/*
