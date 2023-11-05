@@ -26,6 +26,14 @@ on:
     branches: [ '*' ]
 
 jobs:
+  analyze:
+    permissions:
+      security-events: write
+      actions: read
+      strategy:
+        fail-fast: false
+        matrix:
+          language: [ 'java', 'c-cpp', 'go' ]
   build:
     name: Build
     strategy:
