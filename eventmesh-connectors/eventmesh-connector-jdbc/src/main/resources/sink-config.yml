@@ -1,3 +1,4 @@
+#
 # Licensed to the Apache Software Foundation (ASF) under one or more
 # contributor license agreements.  See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
@@ -12,5 +13,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-mysql=org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDatabaseDialectFactory
+pubSubConfig:
+  meshAddress: 127.0.0.1:10001
+  subject: TopicTest
+  idc: FT
+  env: PRD
+  group: rocketmqSource
+  appId: 5032
+  userName: jdbcSourceUser
+  passWord: jdbcPassWord
+sinkConnectorConfig:
+  connectorName: "tttt"
+  jdbcConfig:
+    hostname: localhost
+    port: 3406
+    user: root
+    password: Mxsm22##
+    url: "jdbc:mysql://localhost:3406"
+    #url: jdbc:postgresql://localhost:5432/postgres

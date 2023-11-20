@@ -2,15 +2,15 @@
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
+ * The ASF licenses this file to You under the Apache License.getName(), Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * Unless required by applicable law or agreed to in writing.getName(), software
+ * distributed under the License is distributed on an "AS IS" BASIS.getName(),
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND.getName(), either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -22,40 +22,35 @@ import java.util.Map;
 
 public final class EventMeshTypeNameConverter {
 
-    private static Map<EventMeshDataType<?>, String> PRIMITIVE_TYPE_MAP = new HashMap<>(32);
+    private static Map<String, EventMeshDataType> PRIMITIVE_TYPE_MAP = new HashMap<>(32);
 
     static {
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.STRING_TYPE, "string");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.BOOLEAN_TYPE, "bool");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.BYTE_TYPE, "byte");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.SHORT_TYPE, "short");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.INT_TYPE, "int");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.LONG_TYPE, "long");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.FLOAT_TYPE, "float");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.DOUBLE_TYPE, "double");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveType.VOID_TYPE, "void");
-        PRIMITIVE_TYPE_MAP.put(CalendarType.LOCAL_DATE_TYPE, "LocalDate");
-        PRIMITIVE_TYPE_MAP.put(CalendarType.LOCAL_TIME_TYPE, "LocalTime");
-        PRIMITIVE_TYPE_MAP.put(CalendarType.LOCAL_DATE_TIME_TYPE, "LocalDateTime");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveByteArrayType.BYTES_TYPE, "bytes");
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.STRING_TYPE.getName(), EventMeshDataType.STRING_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.BOOLEAN_TYPE.getName(), EventMeshDataType.BOOLEAN_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.BYTE_TYPE.getName(), EventMeshDataType.BYTE_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.SHORT_TYPE.getName(), EventMeshDataType.SHORT_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.INT_TYPE.getName(), EventMeshDataType.INT_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.LONG_TYPE.getName(), EventMeshDataType.LONG_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.FLOAT_TYPE.getName(), EventMeshDataType.FLOAT_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.DOUBLE_TYPE.getName(), EventMeshDataType.DOUBLE_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.VOID_TYPE.getName(), EventMeshDataType.VOID_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.LOCAL_DATE_TYPE.getName(), EventMeshDataType.LOCAL_DATE_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.LOCAL_TIME_TYPE.getName(), EventMeshDataType.LOCAL_TIME_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.LOCAL_DATE_TIME_TYPE.getName(), EventMeshDataType.LOCAL_DATE_TIME_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.BYTES_TYPE.getName(), EventMeshDataType.BYTES_TYPE);
 
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.STRING_ARRAY_TYPE, "string-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.BOOLEAN_ARRAY_TYPE, "bool-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.BYTE_ARRAY_TYPE, "byte-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.SHORT_ARRAY_TYPE, "short-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.INT_ARRAY_TYPE, "int-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.LONG_ARRAY_TYPE, "long-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.FLOAT_ARRAY_TYPE, "float-array");
-        PRIMITIVE_TYPE_MAP.put(PrimitiveArrayType.DOUBLE_ARRAY_TYPE, "double-array");
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.STRING_ARRAY_TYPE.getName(), EventMeshDataType.STRING_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.BOOLEAN_ARRAY_TYPE.getName(), EventMeshDataType.BOOLEAN_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.BYTE_ARRAY_TYPE.getName(), EventMeshDataType.BYTE_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.SHORT_ARRAY_TYPE.getName(), EventMeshDataType.SHORT_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.INT_ARRAY_TYPE.getName(), EventMeshDataType.INT_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.LONG_ARRAY_TYPE.getName(), EventMeshDataType.LONG_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.FLOAT_ARRAY_TYPE.getName(), EventMeshDataType.FLOAT_ARRAY_TYPE);
+        PRIMITIVE_TYPE_MAP.put(EventMeshDataType.DOUBLE_ARRAY_TYPE.getName(), EventMeshDataType.DOUBLE_ARRAY_TYPE);
     }
 
-    public static String ofName(EventMeshDataType<?> type) {
-        String typeName = PRIMITIVE_TYPE_MAP.get(type);
-        if (typeName == null && (type instanceof DecimalType)) {
-            DecimalType decimalType = (DecimalType) type;
-            return String.format("decimal(%s,%s)", decimalType.getScale(), decimalType.getPrecision());
-        }
-        return typeName;
+    public static EventMeshDataType ofEventMeshDataType(String dataType) {
+        return PRIMITIVE_TYPE_MAP.get(dataType);
     }
 
 }

@@ -20,12 +20,15 @@ package org.apache.eventmesh.connector.jdbc.source.dialect.antlr4.mysql;
 import org.apache.eventmesh.connector.jdbc.antlr4.Antlr4DdlParser;
 import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlLexer;
 import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser;
+import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser.CharsetNameContext;
+import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser.CollationNameContext;
 import org.apache.eventmesh.connector.jdbc.antlr4.listener.Antlr4DdlParserListener;
 import org.apache.eventmesh.connector.jdbc.ddl.DdlParserCallback;
 import org.apache.eventmesh.connector.jdbc.event.Event;
 import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
 import org.apache.eventmesh.connector.jdbc.source.dialect.antlr4.mysql.listener.MySqlAntlr4DdlParserListener;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
+import org.apache.eventmesh.connector.jdbc.utils.JdbcStringUtils;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -36,6 +39,8 @@ import java.util.Set;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import com.mysql.cj.CharsetMapping;
 
 public class MysqlAntlr4DdlParser extends Antlr4DdlParser<MySqlLexer, MySqlParser> {
 
@@ -148,5 +153,27 @@ public class MysqlAntlr4DdlParser extends Antlr4DdlParser<MySqlLexer, MySqlParse
 
     public JdbcSourceConfig getSourceConfig() {
         return sourceConfig;
+    }
+
+    public String parseCharset(CharsetNameContext charsetNameContext) {
+        String charsetName = null;
+        if (charsetNameContext != null && charsetNameContext.getText() != null) {
+            charsetName = JdbcStringUtils.withoutWrapper(charsetNameContext.getText());
+        }
+        return charsetName;
+    }
+
+    public String parseCollation(CollationNameContext collationNameContext) {
+        String collationName = null;
+        if (collationNameContext != null && collationNameContext.getText() != null) {
+            collationName = JdbcStringUtils.withoutWrapper(collationNameContext.getText()).toLowerCase();
+           /* for (int index = 0; index < CharsetMapping.MAP_SIZE; index++) {
+                if (collationName.equals(CharsetMapping.getStaticCollationNameForCollationIndex(index))) {
+                    collationName = CharsetMapping.getStaticMysqlCharsetNameForCollationIndex(index);
+                    break;
+                }
+            }*/
+        }
+        return collationName;
     }
 }

@@ -41,7 +41,7 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.cdc.mysql.RowDeseriali
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.EventDataDeserializationExceptionData;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.EventMeshGtidSet;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlConstants;
-import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.mysql.MysqlDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlJdbcContext;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlSourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;

@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.connector.jdbc.source;
 
+import org.apache.eventmesh.common.utils.JsonUtils;
 import org.apache.eventmesh.openconnect.offsetmgmt.api.data.ConnectRecord;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -99,6 +100,7 @@ public class TaskManagerCoordinator {
         for (int index = 0; index < BATCH_MAX; ++index) {
             try {
                 ConnectRecord record = recordBlockingQueue.poll(3, TimeUnit.SECONDS);
+                System.out.println("+++++++++++++++++++++"+JsonUtils.toJSONString(record));
                 if (Objects.isNull(record)) {
                     break;
                 }

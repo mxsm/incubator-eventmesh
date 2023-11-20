@@ -23,6 +23,9 @@ import java.io.Serializable;
 import java.sql.JDBCType;
 import java.sql.Types;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -33,7 +36,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class Column<Col extends Column> implements Serializable {
+public class Column<Col extends Column> implements Serializable {
 
     /**
      * Name of the column
@@ -43,7 +46,9 @@ public abstract class Column<Col extends Column> implements Serializable {
     /**
      * Data type of the column
      */
-    protected EventMeshDataType<?> dataType;
+    @JsonSerialize(using = EventMeshDataTypeJsonSerializer.class)
+    @JsonDeserialize(using = EventMeshDataTypeJsonDeserializer.class)
+    protected EventMeshDataType dataType;
 
     /**
      * {@link Types JDBC type}
@@ -53,7 +58,7 @@ public abstract class Column<Col extends Column> implements Serializable {
     /**
      * Length of the column
      */
-    protected Integer columnLength;
+    protected Long columnLength;
 
     /**
      * Decimal point of the column
@@ -63,7 +68,7 @@ public abstract class Column<Col extends Column> implements Serializable {
     /**
      * Indicates if the column can be null or not
      */
-    protected boolean notNull;
+    protected boolean notNull = false;
 
     /**
      * Comment for the column
@@ -77,13 +82,17 @@ public abstract class Column<Col extends Column> implements Serializable {
 
     protected String defaultValueExpression;
 
-    protected int order;
+    protected int order = 1;
+
+    protected String charsetName;
 
     /**
      * creates a clone of the Column
      *
      * @return clone of column
      */
-    public abstract Col clone();
+    public Col clone() {
+        return null;
+    }
 
 }

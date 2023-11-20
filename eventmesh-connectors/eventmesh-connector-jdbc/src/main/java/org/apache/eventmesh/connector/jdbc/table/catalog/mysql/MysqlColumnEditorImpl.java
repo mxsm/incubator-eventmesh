@@ -65,7 +65,7 @@ public class MysqlColumnEditorImpl extends AbstractColumnEditorImpl<MysqlColumnE
      * @return The column editor with the collation set.
      */
     @Override
-    public MysqlColumnEditor collate(String collationName) {
+    public MysqlColumnEditor collation(String collationName) {
         this.collationName = collationName;
         return this;
     }
@@ -78,6 +78,6 @@ public class MysqlColumnEditorImpl extends AbstractColumnEditorImpl<MysqlColumnE
     @Override
     public MysqlColumn build() {
         return MysqlColumn.of(ofName(), ofEventMeshDataType(), ofJdbcType(), ofColumnLength(), ofScale(), isNotNull(), ofComment(), ofDefaultValue(),
-            ofDefaultValueExpression(), autoIncremented, generated, collationName, ofOrder());
+            ofDefaultValueExpression(), autoIncremented, generated, collationName, ofOrder(), ofCharsetName());
     }
 }

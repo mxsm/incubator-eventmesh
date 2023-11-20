@@ -20,7 +20,7 @@ package org.apache.eventmesh.connector.jdbc.source.dialect.snapshot;
 import org.apache.eventmesh.common.ThreadPoolFactory;
 import org.apache.eventmesh.connector.jdbc.DataChanges;
 import org.apache.eventmesh.connector.jdbc.DataChanges.Builder;
-import org.apache.eventmesh.connector.jdbc.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.Field;
 import org.apache.eventmesh.connector.jdbc.JdbcContext;
 import org.apache.eventmesh.connector.jdbc.OffsetContext;

@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.source.dialect;
+package org.apache.eventmesh.connector.jdbc.sink.config;
 
-import org.apache.eventmesh.connector.jdbc.DatabaseDialect;
-import org.apache.eventmesh.openconnect.api.config.SourceConfig;
-import org.apache.eventmesh.spi.EventMeshExtensionType;
-import org.apache.eventmesh.spi.EventMeshSPI;
+import org.apache.eventmesh.openconnect.api.config.SinkConfig;
 
-/**
- * Interface for creating a database dialect based on the provided source configuration.
- */
-@EventMeshSPI(eventMeshExtensionType = EventMeshExtensionType.JDBC_DATABASE_DIALECT)
-public interface DatabaseDialectFactory {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    /**
-     * Creates a database dialect based on the provided source configuration.
-     *
-     * @param config the source configuration to create a database dialect for
-     * @return the created database dialect
-     */
-    DatabaseDialect createDatabaseDialect(SourceConfig config);
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class JdbcSinkConfig extends SinkConfig {
+
+    public SinkConnectorConfig sinkConnectorConfig;
 
 }

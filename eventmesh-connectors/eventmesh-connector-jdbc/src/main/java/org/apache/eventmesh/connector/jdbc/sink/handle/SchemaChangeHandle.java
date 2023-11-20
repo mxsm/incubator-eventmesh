@@ -15,35 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.table.type;
+package org.apache.eventmesh.connector.jdbc.sink.handle;
 
-import java.util.List;
+import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
 
-public class EvetMeshRowType implements EventMeshDataType<EventMeshRow> {
-
-    private List<Pair<String/* field name */, EventMeshDataType<?>>> fields;
-
-    public EvetMeshRowType(List<Pair<String, EventMeshDataType<?>>> fields) {
-        this.fields = fields;
-    }
+/**
+ * This interface represents a schema change handler.
+ */
+public interface SchemaChangeHandle {
 
     /**
-     * Returns the type class of the data.
+     * Handles a schema change using the specified JDBC connection data.
      *
-     * @return the type class of the data.
+     * @param connectData the JDBC connection data
      */
-    @Override
-    public Class<EventMeshRow> getTypeClass() {
-        return EventMeshRow.class;
-    }
+    void handle(JdbcConnectData connectData) throws Exception;
 
-    /**
-     * Returns the SQL type of the data.
-     *
-     * @return the SQL type of the data.
-     */
-    @Override
-    public SQLType getSQLType() {
-        return SQLType.ROW;
-    }
 }

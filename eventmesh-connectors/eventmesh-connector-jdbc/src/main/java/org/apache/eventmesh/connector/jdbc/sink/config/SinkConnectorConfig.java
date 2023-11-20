@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.source.dialect;
+package org.apache.eventmesh.connector.jdbc.sink.config;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
 
-public enum DatabaseType {
+import lombok.Data;
 
-    MYSQL("mysql");
+/**
+ * Configuration parameters for a sink connector.
+ */
+@Data
+public class SinkConnectorConfig {
 
-    private String name;
+    /**
+     * The name of the sink connector.
+     */
+    private String connectorName;
 
-    DatabaseType(String name) {
-        this.name = name;
+    /**
+     * JDBC configuration for connecting to a database.
+     */
+    private JdbcConfig jdbcConfig;
+
+    public String getDatabaseType(){
+       return  "mysql";
     }
-
-    public static DatabaseType ofValue(String name) {
-        DatabaseType[] databaseTypes = values();
-        for (DatabaseType databaseType : databaseTypes) {
-            if (StringUtils.equalsIgnoreCase(databaseType.name, name)) {
-                return databaseType;
-            }
-        }
-        return null;
-    }
-
 }
+

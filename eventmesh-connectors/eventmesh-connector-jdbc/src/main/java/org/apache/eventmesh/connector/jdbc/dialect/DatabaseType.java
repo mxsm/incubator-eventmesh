@@ -15,18 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.source.dialect.mysql;
+package org.apache.eventmesh.connector.jdbc.dialect;
 
-import org.apache.eventmesh.connector.jdbc.DatabaseDialect;
-import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
-import org.apache.eventmesh.connector.jdbc.source.dialect.DatabaseDialectFactory;
-import org.apache.eventmesh.openconnect.api.config.SourceConfig;
+import org.apache.commons.lang3.StringUtils;
 
-public class MysqlDatabaseDialectFactory implements DatabaseDialectFactory {
+public enum DatabaseType {
 
-    @Override
-    public DatabaseDialect createDatabaseDialect(SourceConfig config) {
-        DatabaseDialect databaseDialect = new MysqlDatabaseDialect((JdbcSourceConfig) config);
-        return databaseDialect;
+    MYSQL("mysql");
+
+    private String name;
+
+    DatabaseType(String name) {
+        this.name = name;
     }
+
+    public static DatabaseType ofValue(String name) {
+        DatabaseType[] databaseTypes = values();
+        for (DatabaseType databaseType : databaseTypes) {
+            if (StringUtils.equalsIgnoreCase(databaseType.name, name)) {
+                return databaseType;
+            }
+        }
+        return null;
+    }
+
 }

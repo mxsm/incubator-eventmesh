@@ -22,9 +22,12 @@ import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 
 import java.sql.JDBCType;
 
+import lombok.Data;
+
 /**
  * Represents a MySQL column in a database table.
  */
+@Data
 public class MysqlColumn extends Column<MysqlColumn> {
 
     private boolean autoIncremented;
@@ -33,18 +36,19 @@ public class MysqlColumn extends Column<MysqlColumn> {
 
     private String collationName;
 
-    public MysqlColumn(String name, EventMeshDataType<?> dataType, JDBCType jdbcType, Integer columnLength, Integer decimal, boolean notNull,
-        String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0);
+    public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
+        String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
+        String charsetName) {
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName);
         this.autoIncremented = autoIncremented;
         this.generated = generated;
         this.collationName = collationName;
     }
 
-    public MysqlColumn(String name, EventMeshDataType<?> dataType, JDBCType jdbcType, Integer columnLength, Integer decimal, boolean notNull,
+    public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        int order) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order);
+        int order, String charsetName) {
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName);
         this.autoIncremented = autoIncremented;
         this.generated = generated;
         this.collationName = collationName;
@@ -55,17 +59,19 @@ public class MysqlColumn extends Column<MysqlColumn> {
     }
 
     public static MysqlColumn of(
-        String name, EventMeshDataType<?> dataType, JDBCType jdbcType, Integer columnLength, Integer decimal, boolean notNull,
-        String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName) {
+        String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
+        String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
+        String charsetName) {
         return new MysqlColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            autoIncremented, generated, collationName);
+            autoIncremented, generated, collationName, charsetName);
     }
 
     public static MysqlColumn of(
-        String name, EventMeshDataType<?> dataType, JDBCType jdbcType, Integer columnLength, Integer decimal, boolean notNull, String comment,
-        Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName, int order) {
+        String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull, String comment,
+        Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName, int order,
+        String charsetName) {
         return new MysqlColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            autoIncremented, generated, collationName, order);
+            autoIncremented, generated, collationName, order, charsetName);
     }
 
     /**

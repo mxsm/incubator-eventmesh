@@ -15,11 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc;
+package org.apache.eventmesh.connector.jdbc.dialect;
 
+import org.apache.eventmesh.connector.jdbc.CatalogChanges;
+import org.apache.eventmesh.connector.jdbc.JdbcDriverMetaData;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnectionProvider;
+import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Catalog;
+import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
+import org.apache.eventmesh.connector.jdbc.type.DatabaseTypeDialect;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +33,7 @@ import java.sql.SQLException;
 /**
  * Interface for a database dialect, which extends the ConnectionProvider and Catalog interfaces.
  */
-public interface DatabaseDialect<JC extends JdbcConnection> extends JdbcConnectionProvider<JC>, Catalog {
+public interface DatabaseDialect<JC extends JdbcConnection> extends JdbcConnectionProvider<JC>, Catalog, DatabaseTypeDialect {
 
     /**
      * Initializes the database dialect.
@@ -41,11 +46,11 @@ public interface DatabaseDialect<JC extends JdbcConnection> extends JdbcConnecti
     void start();
 
     /**
-     * Retrieves the name of the database dialect.
+     * Retrieves the type of the database dialect.
      *
-     * @return The name of the database dialect.
+     * @return The type of the database dialect.
      */
-    String getName();
+    DatabaseType getDatabaseType();
 
     /**
      * Creates a prepared statement for the given SQL query using the provided database connection.
@@ -70,4 +75,5 @@ public interface DatabaseDialect<JC extends JdbcConnection> extends JdbcConnecti
      * @return The JDBC protocol.
      */
     String jdbcProtocol();
+
 }

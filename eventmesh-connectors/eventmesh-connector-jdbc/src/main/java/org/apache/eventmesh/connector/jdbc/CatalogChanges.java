@@ -25,11 +25,14 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import java.util.List;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data
+
 /**
  * Represents changes in a catalog, such as schema or table modifications.
  */
+@Data
+@NoArgsConstructor
 public class CatalogChanges {
 
     /**

@@ -15,24 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.source.dialect.mysql;
+package org.apache.eventmesh.connector.jdbc.dialect.mysql;
 
 import org.apache.eventmesh.connector.jdbc.DataTypeConvertor;
 import org.apache.eventmesh.connector.jdbc.JdbcDriverMetaData;
+import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
+import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
 import org.apache.eventmesh.connector.jdbc.connection.mysql.MysqlJdbcConnection;
+import org.apache.eventmesh.connector.jdbc.dialect.AbstractGeneralDatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseType;
 import org.apache.eventmesh.connector.jdbc.exception.CatalogException;
 import org.apache.eventmesh.connector.jdbc.exception.DatabaseNotExistException;
 import org.apache.eventmesh.connector.jdbc.exception.TableNotExistException;
-import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
-import org.apache.eventmesh.connector.jdbc.source.config.SourceConnectorConfig;
-import org.apache.eventmesh.connector.jdbc.source.dialect.AbstractGeneralDatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDataTypeConvertor;
+import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDialectSql;
 import org.apache.eventmesh.connector.jdbc.table.catalog.CatalogTable;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.catalog.DefaultColumn;
 import org.apache.eventmesh.connector.jdbc.table.catalog.PrimaryKey;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumn;
+import org.apache.eventmesh.connector.jdbc.type.mysql.BitType;
+import org.apache.eventmesh.connector.jdbc.type.mysql.EnumType;
+import org.apache.eventmesh.connector.jdbc.type.mysql.SetType;
+import org.apache.eventmesh.connector.jdbc.utils.MysqlUtils;
 
 import java.sql.Connection;
+import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -48,17 +58,17 @@ import com.mysql.cj.MysqlType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJdbcConnection> {
+public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJdbcConnection,MysqlColumn> {
 
     private MysqlJdbcConnection connection;
 
     private DataTypeConvertor<MysqlType> dataTypeConvertor = new MysqlDataTypeConvertor();
 
-    private SourceConnectorConfig config;
+    private JdbcConfig config;
 
-    public MysqlDatabaseDialect(JdbcSourceConfig config) {
-        super(config.getSourceConnectorConfig());
-        this.config = config.getSourceConnectorConfig();
+    public MysqlDatabaseDialect(JdbcConfig config) {
+        super(config);
+        this.config = config;
     }
 
     @Override
@@ -80,6 +90,11 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
             }
         } while (!initSuccess);
 
+        //handle type register
+        super.registerTypes();
+        registerType(BitType.INSTANCE);
+        registerType(SetType.INSTANCE);
+        registerType(EnumType.INSTANCE);
     }
 
     @Override
@@ -89,7 +104,7 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
 
     private MysqlJdbcConnection initJdbcConnection() {
         try {
-            return new MysqlJdbcConnection(config.getJdbcConfig(), null, false);
+            return new MysqlJdbcConnection(config, null, false);
         } catch (Exception e) {
             throw new CatalogException(e);
         }
@@ -202,7 +217,7 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
                 DefaultColumn column = columns.computeIfAbsent(columnName, key -> new DefaultColumn());
                 column.setName(columnName);
                 int precision = tableMetaData.getPrecision(columnIndex);
-                column.setColumnLength(precision);
+                //column.setColumnLength(precision);
                 Map<String, Object> dataTypeProperties = new HashMap<>();
                 dataTypeProperties.put(MysqlDataTypeConvertor.PRECISION, precision);
                 int scale = tableMetaData.getScale(columnIndex);
@@ -258,8 +273,8 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
     }
 
     @Override
-    public String getName() {
-        return null;
+    public DatabaseType getDatabaseType() {
+        return DatabaseType.MYSQL;
     }
 
     @Override
@@ -267,6 +282,24 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
         Objects.requireNonNull(connection, "Connection is null");
         Objects.requireNonNull(sql, "SQL is null");
         return connection.prepareStatement(sql);
+    }
+
+    /**
+     * @param tableId
+     * @return
+     */
+    @Override
+    public String getQualifiedTableName(TableId tableId) {
+        return MysqlUtils.wrapper(tableId);
+    }
+
+    /**
+     * @param text
+     * @return
+     */
+    @Override
+    public String getQualifiedText(String text) {
+        return MysqlUtils.wrapper(text);
     }
 
     /**

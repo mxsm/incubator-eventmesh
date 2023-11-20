@@ -25,7 +25,7 @@ import org.apache.eventmesh.connector.jdbc.event.EventConsumer;
 import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
 import org.apache.eventmesh.connector.jdbc.source.config.MysqlConfig;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlConstants;
-import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.mysql.MysqlDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDialectSql;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlJdbcContext;
 import org.apache.eventmesh.connector.jdbc.source.dialect.snapshot.AbstractSnapshotEngine;
@@ -185,7 +185,7 @@ public class MysqlSnapshotEngine extends
                 if (event == null) {
                     return;
                 }
-                event.getJdbcConnectData().getPayload().ofSourceMateData().setSnapshot(true);
+                event.getJdbcConnectData().getPayload().withDdl(ddl).ofSourceMateData().setSnapshot(true);
                 eventQueue.put(event);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

@@ -27,7 +27,7 @@ public final class JdbcConnectData {
 
     private Schema schema;
 
-    private byte type;
+    private byte type = 0;
 
     public JdbcConnectData() {
     }
@@ -66,5 +66,13 @@ public final class JdbcConnectData {
 
     public void markSchemaChanges() {
         this.type |= SCHEMA_CHANGES;
+    }
+
+    public boolean isDataChanges() {
+        return (this.type & DATA_CHANGES) != 0;
+    }
+
+    public boolean isSchemaChanges() {
+        return (this.type & SCHEMA_CHANGES) != 0;
     }
 }

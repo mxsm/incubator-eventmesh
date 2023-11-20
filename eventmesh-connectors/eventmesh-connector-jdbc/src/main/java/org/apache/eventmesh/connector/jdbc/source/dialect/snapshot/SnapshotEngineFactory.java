@@ -17,7 +17,7 @@
 
 package org.apache.eventmesh.connector.jdbc.source.dialect.snapshot;
 
-import org.apache.eventmesh.connector.jdbc.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.JdbcContext;
 import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
 import org.apache.eventmesh.spi.EventMeshExtensionType;

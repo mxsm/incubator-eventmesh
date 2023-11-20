@@ -19,9 +19,10 @@ package org.apache.eventmesh.connector.jdbc;
 
 import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 
-import java.util.HashMap;
+import lombok.Getter;
+import lombok.Setter;
 
-public final class Payload extends HashMap<String, Object> {
+public final class Payload {
 
     public static final String AFTER_FIELD = "after";
 
@@ -29,37 +30,67 @@ public final class Payload extends HashMap<String, Object> {
 
     public static final String SOURCE = "source";
 
-    public static final String DDL = "ddl";
+    @Getter
+    @Setter
+    private SourceMateData source;
+
+    @Getter
+    @Setter
+    private String ddl;
+
+    @Getter
+    @Setter
+    private CatalogChanges catalogChanges;
+
+    @Getter
+    @Setter
+    private DataChanges dataChanges;
+
+    @Getter
+    @Setter
+    private long timestamp;
 
     /**
      * Constructs an empty <code>HashMap</code> with the default initial capacity (16) and the default load factor (0.75).
      */
     public Payload() {
-        this.put("timestamp", System.currentTimeMillis());
+        this.timestamp = System.currentTimeMillis();
     }
 
     public Payload withSource(SourceMateData source) {
-        this.put(SOURCE, source);
+        this.source = source;
         return this;
     }
 
     public Payload withDdl(String ddl) {
-        this.put(DDL, ddl);
+        this.ddl = ddl;
         return this;
     }
 
     public Payload withCatalogChanges(CatalogChanges catalogChanges) {
-        this.put("catalogChanges", catalogChanges);
+        this.catalogChanges = catalogChanges;
         return this;
     }
 
     public Payload withDataChanges(DataChanges dataChanges) {
-        this.put("dataChanges", dataChanges);
+        this.dataChanges = dataChanges;
         return this;
     }
 
     public SourceMateData ofSourceMateData() {
-        return (SourceMateData) super.get(SOURCE);
+        return getSource();
+    }
+
+    public CatalogChanges ofCatalogChanges() {
+        return getCatalogChanges();
+    }
+
+    public DataChanges ofDataChanges() {
+        return getDataChanges();
+    }
+
+    public String ofDdl() {
+        return getDdl();
     }
 
     public static Builder builder() {
@@ -74,13 +105,8 @@ public final class Payload extends HashMap<String, Object> {
             payload = new Payload();
         }
 
-        public Builder put(String key, Object value) {
-            payload.put(key, value);
-            return this;
-        }
-
         public Builder withSource(SourceMateData source) {
-            payload.put(SOURCE, source);
+            payload.withSource(source);
             return this;
         }
 

@@ -15,26 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.source.dialect;
+package org.apache.eventmesh.connector.jdbc.dialect;
 
-import org.apache.eventmesh.connector.jdbc.DatabaseDialect;
+import org.apache.eventmesh.common.utils.LogUtils;
+import org.apache.eventmesh.connector.jdbc.CatalogChanges;
+import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
+import org.apache.eventmesh.connector.jdbc.event.SchemaChangeEventType;
 import org.apache.eventmesh.connector.jdbc.exception.JdbcConnectionException;
-import org.apache.eventmesh.connector.jdbc.source.config.SourceConnectorConfig;
+import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
+import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
+import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
+import org.apache.eventmesh.connector.jdbc.type.Type;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
-public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection> implements DatabaseDialect<JC> {
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, Col extends Column> implements DatabaseDialect<JC> {
 
     private static final int DEFAULT_BATCH_MAX_ROWS = 20;
 
-    private SourceConnectorConfig config;
+    private JdbcConfig config;
 
     private int batchMaxRows = DEFAULT_BATCH_MAX_ROWS;
 
-    public AbstractGeneralDatabaseDialect(SourceConnectorConfig config) {
+    private final Map<String, Type> typeRegisters = new HashMap<>(32);
+
+    public AbstractGeneralDatabaseDialect(JdbcConfig config) {
         this.config = config;
     }
 
@@ -52,4 +72,22 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection> 
         return preparedStatement;
     }
 
+    @Override
+    public Type getType(Column<?> column) {
+        return null;
+    }
+
+    protected void registerTypes(){
+        //TODO
+    }
+
+    protected void registerType(Type type){
+        Optional.ofNullable(type.ofRegistrationKeys()).orElse(new ArrayList<>(0)).forEach(key->{
+            typeRegisters.put(key, type);
+        });
+    }
+
+    public abstract String getQualifiedTableName(TableId tableId);
+
+    public abstract String getQualifiedText(String text);
 }
