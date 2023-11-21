@@ -29,7 +29,7 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
-
+import org.apache.eventmesh.connector.jdbc.type.Type;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -178,8 +178,7 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
             builder.append(((AbstractGeneralDatabaseDialect) databaseDialect).getQualifiedText(columnName));
             //assemble column type
             Column column = columnMap.get(columnName);
-            String typeName = this.hibernateDialect.getTypeName(column.getJdbcType().getVendorTypeNumber(),
-                Optional.ofNullable(column.getColumnLength()).orElse(0L), 0, Optional.ofNullable(column.getDecimal()).orElse(0));
+            String typeName = getTypeName(column);
             builder.append(" ").append(typeName);
 
             if (StringUtils.isNotBlank(column.getDefaultValueExpression()) || null != column.getDefaultValue()) {
@@ -220,5 +219,14 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         SqlStatementAssembler assembler = new SqlStatementAssembler();
 
         return assembler.confirm();
+    }
+
+    protected String getTypeName(Column<?> column){
+        Type type = this.databaseDialect.getType(column);
+        if(null != type){
+            return type.getTypeName(this.databaseDialect, column);
+        }
+        return this.hibernateDialect.getTypeName(column.getJdbcType().getVendorTypeNumber(),
+            Optional.ofNullable(column.getColumnLength()).orElse(0L), 0, Optional.ofNullable(column.getDecimal()).orElse(0));
     }
 }

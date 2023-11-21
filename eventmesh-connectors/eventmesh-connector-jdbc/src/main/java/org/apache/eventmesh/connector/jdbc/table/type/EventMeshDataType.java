@@ -21,8 +21,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
-public enum EventMeshDataType {
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.type.Type;
+
+public enum EventMeshDataType implements Type{
     BYTE_TYPE(Byte.class, SQLType.TINYINT, "INT_8"),
     SHORT_TYPE(Short.class, SQLType.SMALLINT, "INT_16"),
     INT_TYPE(Integer.class, SQLType.INTEGER, "INT_32"),
@@ -95,5 +100,23 @@ public enum EventMeshDataType {
             ", sqlType=" + sqlType +
             ", name='" + name + '\'' +
             '}';
+    }
+
+    @Override
+    public List<String> ofRegistrationKeys() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'ofRegistrationKeys'");
+    }
+
+    @Override
+    public String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDefaultValue'");
+    }
+
+    @Override
+    public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getTypeName'");
     }
 }
