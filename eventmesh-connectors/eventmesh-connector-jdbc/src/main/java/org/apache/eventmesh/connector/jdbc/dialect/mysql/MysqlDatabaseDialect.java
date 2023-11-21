@@ -38,7 +38,9 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumn;
 import org.apache.eventmesh.connector.jdbc.type.mysql.BitType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.EnumType;
+import org.apache.eventmesh.connector.jdbc.type.mysql.JsonType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.SetType;
+import org.apache.eventmesh.connector.jdbc.type.mysql.TinyIntType;
 import org.apache.eventmesh.connector.jdbc.utils.MysqlUtils;
 
 import java.sql.Connection;
@@ -95,6 +97,8 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
         registerType(BitType.INSTANCE);
         registerType(SetType.INSTANCE);
         registerType(EnumType.INSTANCE);
+        registerType(TinyIntType.INSTANCE);
+        registerType(JsonType.INSTANCE);
     }
 
     @Override
@@ -342,5 +346,14 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
         if (this.connection != null) {
             this.connection.close();
         }
+    }
+
+    /**
+     * @param column
+     * @return
+     */
+    @Override
+    public String getAutoIncrementFormatted(Column<?> column) {
+        return " AUTO_INCREMENT ";
     }
 }

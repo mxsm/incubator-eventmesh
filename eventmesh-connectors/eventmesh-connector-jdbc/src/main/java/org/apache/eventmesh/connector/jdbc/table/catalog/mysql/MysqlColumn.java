@@ -30,28 +30,16 @@ import lombok.Data;
 @Data
 public class MysqlColumn extends Column<MysqlColumn> {
 
-    private boolean autoIncremented;
-
-    private boolean generated;
-
-    private String collationName;
-
     public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
         String charsetName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName);
-        this.autoIncremented = autoIncremented;
-        this.generated = generated;
-        this.collationName = collationName;
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName, autoIncremented, generated, collationName);
     }
 
     public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
         int order, String charsetName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName);
-        this.autoIncremented = autoIncremented;
-        this.generated = generated;
-        this.collationName = collationName;
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName, autoIncremented, generated, collationName);
     }
 
     public MysqlColumn() {

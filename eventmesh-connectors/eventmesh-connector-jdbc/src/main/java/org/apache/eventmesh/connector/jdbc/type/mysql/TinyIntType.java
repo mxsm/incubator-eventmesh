@@ -15,31 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.type;
+package org.apache.eventmesh.connector.jdbc.type.mysql;
 
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
-import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
-public abstract class AbstractType implements Type {
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
+public class TinyIntType extends AbstractType {
+    public static final TinyIntType INSTANCE = new TinyIntType();
+    /**
+     * @return
+     */
     @Override
-    public String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-        Object defaultValue = column.getDefaultValue();
-        EventMeshDataType dataType = column.getDataType();
-        switch (dataType) {
-            case BYTE_TYPE:
-            case SHORT_TYPE:
-            case INT_TYPE:
-            case LONG_TYPE:
-            case FLOAT_TYPE:
-            case DOUBLE_TYPE:
-                return defaultValue.toString();
-            case BOOLEAN_TYPE:
-                return databaseDialect.getBooleanFormatted((boolean)defaultValue);
-            case STRING_TYPE:
-                  return "'" + defaultValue + "'";
+    public List<String> ofRegistrationKeys() {
+        return Arrays.asList("TINYINT");
+    }
+
+    /**
+     * @param databaseDialect
+     * @param column
+     * @return
+     */
+    @Override
+    public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
+
+        final int size = Optional.ofNullable(column.getColumnLength()).orElse(0L).intValue();
+        if(size > 0){
+            return String.format("tinyint(%d)", size);
         }
-        throw new IllegalArgumentException("Unsupported data type: " + dataType);
+        return "tinyint";
     }
 }

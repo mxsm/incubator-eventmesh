@@ -4,10 +4,15 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 
 public interface DatabaseTypeDialect {
 
+    String EMPTY_STRING = "";
+
     Type getType(Column<?> column);
 
-    default String getBoolenFormatted(boolean value){
-        return Boolean.valueOf(value).toString();
+    default String getBooleanFormatted(boolean value) {
+        return value ? Boolean.TRUE.toString() : Boolean.FALSE.toString();
     }
 
+    default String getAutoIncrementFormatted(Column<?> column) {
+        return EMPTY_STRING;
+    }
 }

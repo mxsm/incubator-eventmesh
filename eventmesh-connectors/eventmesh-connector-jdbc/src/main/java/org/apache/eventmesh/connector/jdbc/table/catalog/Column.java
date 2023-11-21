@@ -86,6 +86,12 @@ public class Column<Col extends Column> implements Serializable {
 
     protected String charsetName;
 
+    protected boolean autoIncremented;
+
+    protected boolean generated;
+
+    protected String collationName;
+
     /**
      * creates a clone of the Column
      *

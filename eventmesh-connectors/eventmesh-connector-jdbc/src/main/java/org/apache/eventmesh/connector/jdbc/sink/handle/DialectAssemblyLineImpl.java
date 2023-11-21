@@ -30,6 +30,7 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.type.Type;
+
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -181,18 +182,21 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
             String typeName = getTypeName(column);
             builder.append(" ").append(typeName);
 
+            if (Optional.ofNullable(table.getPrimaryKey().getColumnNames()).orElse(new ArrayList<>(0)).contains(columnName)) {
+                builder.append(" NOT NULL ");
+                if (column.isAutoIncremented()) {
+                    builder.append(this.databaseDialect.getAutoIncrementFormatted(column));
+                }
+            } else {
+                builder.append(column.isNotNull() ? " NOT NULL" : " NULL");
+            }
+
             if (StringUtils.isNotBlank(column.getDefaultValueExpression()) || null != column.getDefaultValue()) {
                 if (null != column.getDefaultValue()) {
                     builder.append(" DEFAULT ").append(column.getDefaultValue());
                 } else {
                     builder.append(" DEFAULT ").append(column.getDefaultValueExpression());
                 }
-            }
-
-            if (Optional.ofNullable(table.getPrimaryKey().getColumnNames()).orElse(new ArrayList<>(0)).contains(columnName)) {
-                builder.append(" NOT NULL");
-            } else {
-                builder.append(column.isNotNull() ? " NOT NULL" : " NULL");
             }
             //assemble column default value
             return builder.toString();
@@ -221,9 +225,9 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         return assembler.confirm();
     }
 
-    protected String getTypeName(Column<?> column){
+    protected String getTypeName(Column<?> column) {
         Type type = this.databaseDialect.getType(column);
-        if(null != type){
+        if (null != type) {
             return type.getTypeName(this.databaseDialect, column);
         }
         return this.hibernateDialect.getTypeName(column.getJdbcType().getVendorTypeNumber(),

@@ -29,27 +29,27 @@ import lombok.NoArgsConstructor;
 public class DefaultColumn extends Column<DefaultColumn> {
 
     public DefaultColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
-        String comment, Object defaultValue, String defaultValueExpression, String charsetName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName);
+        String comment, Object defaultValue, String defaultValueExpression, String charsetName,boolean autoIncremented, boolean generated, String collationName) {
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName, autoIncremented, generated, collationName);
     }
 
     public DefaultColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
-        String comment, Object defaultValue, String defaultValueExpression, int order, String charsetName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName);
+        String comment, Object defaultValue, String defaultValueExpression, int order, String charsetName,boolean autoIncremented, boolean generated, String collationName) {
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName, autoIncremented, generated, collationName);
     }
 
     public static DefaultColumn of(
         String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
-        String comment, Object defaultValue, String defaultValueExpression, String charsetName) {
+        String comment, Object defaultValue, String defaultValueExpression, String charsetName,boolean autoIncremented, boolean generated, String collationName) {
         return new DefaultColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            charsetName);
+            charsetName, autoIncremented, generated, collationName);
     }
 
     public static DefaultColumn of(
         String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
-        String comment, Object defaultValue, String defaultValueExpression, int order, String charsetName) {
+        String comment, Object defaultValue, String defaultValueExpression, int order, String charsetName,boolean autoIncremented, boolean generated, String collationName) {
         return new DefaultColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order,
-            charsetName);
+            charsetName, autoIncremented, generated, collationName);
     }
 
     /**
@@ -60,6 +60,6 @@ public class DefaultColumn extends Column<DefaultColumn> {
     @Override
     public DefaultColumn clone() {
         return DefaultColumn.of(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order,
-            charsetName);
+            charsetName, autoIncremented, generated, collationName);
     }
 }

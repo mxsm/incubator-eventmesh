@@ -28,6 +28,7 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
+import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 import org.apache.eventmesh.connector.jdbc.type.Type;
 
 import java.sql.Connection;
@@ -78,7 +79,27 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, 
     }
 
     protected void registerTypes(){
-        //TODO
+        registerType(EventMeshDataType.BOOLEAN_TYPE);
+        registerType(EventMeshDataType.BOOLEAN_ARRAY_TYPE);
+        registerType(EventMeshDataType.BYTE_ARRAY_TYPE);
+        registerType(EventMeshDataType.BYTE_TYPE);
+        registerType(EventMeshDataType.BYTES_TYPE);
+        registerType(EventMeshDataType.DOUBLE_ARRAY_TYPE);
+        registerType(EventMeshDataType.DOUBLE_TYPE);
+        registerType(EventMeshDataType.FLOAT_ARRAY_TYPE);
+        registerType(EventMeshDataType.FLOAT_TYPE);
+        registerType(EventMeshDataType.INT_ARRAY_TYPE);
+        registerType(EventMeshDataType.INT_TYPE);
+        registerType(EventMeshDataType.LONG_ARRAY_TYPE);
+        registerType(EventMeshDataType.LONG_TYPE);
+        registerType(EventMeshDataType.LOCAL_DATE_TIME_TYPE);
+        registerType(EventMeshDataType.LOCAL_DATE_TYPE);
+        registerType(EventMeshDataType.LOCAL_TIME_TYPE);
+        registerType(EventMeshDataType.SHORT_ARRAY_TYPE);
+        registerType(EventMeshDataType.SHORT_TYPE);
+        registerType(EventMeshDataType.STRING_ARRAY_TYPE);
+        registerType(EventMeshDataType.STRING_TYPE);
+        registerType(EventMeshDataType.VOID_TYPE);
     }
 
     protected void registerType(Type type){

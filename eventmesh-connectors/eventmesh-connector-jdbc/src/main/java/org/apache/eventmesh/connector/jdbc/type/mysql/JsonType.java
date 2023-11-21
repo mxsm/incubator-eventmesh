@@ -15,31 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.type;
+package org.apache.eventmesh.connector.jdbc.type.mysql;
 
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
-import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
-public abstract class AbstractType implements Type {
+import java.util.Arrays;
+import java.util.List;
 
+public class JsonType extends AbstractType {
+
+    public static final JsonType INSTANCE = new JsonType();
+
+    /**
+     * @return
+     */
     @Override
-    public String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-        Object defaultValue = column.getDefaultValue();
-        EventMeshDataType dataType = column.getDataType();
-        switch (dataType) {
-            case BYTE_TYPE:
-            case SHORT_TYPE:
-            case INT_TYPE:
-            case LONG_TYPE:
-            case FLOAT_TYPE:
-            case DOUBLE_TYPE:
-                return defaultValue.toString();
-            case BOOLEAN_TYPE:
-                return databaseDialect.getBooleanFormatted((boolean)defaultValue);
-            case STRING_TYPE:
-                  return "'" + defaultValue + "'";
-        }
-        throw new IllegalArgumentException("Unsupported data type: " + dataType);
+    public List<String> ofRegistrationKeys() {
+        return Arrays.asList("json", "JSON", "Json");
+    }
+
+    /**
+     * @param databaseDialect
+     * @param column
+     * @return
+     */
+    @Override
+    public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
+        return "json";
     }
 }
