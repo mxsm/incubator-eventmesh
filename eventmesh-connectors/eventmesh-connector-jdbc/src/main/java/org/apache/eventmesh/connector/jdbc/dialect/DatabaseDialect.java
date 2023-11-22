@@ -17,13 +17,10 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect;
 
-import org.apache.eventmesh.connector.jdbc.CatalogChanges;
 import org.apache.eventmesh.connector.jdbc.JdbcDriverMetaData;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnectionProvider;
-import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Catalog;
-import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.type.DatabaseTypeDialect;
 
 import java.sql.Connection;

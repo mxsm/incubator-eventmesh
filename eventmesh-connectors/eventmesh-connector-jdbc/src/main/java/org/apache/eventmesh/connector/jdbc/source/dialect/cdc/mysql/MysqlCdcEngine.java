@@ -26,6 +26,7 @@ import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.Schema;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
 import org.apache.eventmesh.connector.jdbc.connection.mysql.MysqlJdbcConnection;
+import org.apache.eventmesh.connector.jdbc.dialect.mysql.MysqlDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.event.DeleteDataEvent;
 import org.apache.eventmesh.connector.jdbc.event.EventConsumer;
 import org.apache.eventmesh.connector.jdbc.event.GeneralDataChangeEvent;
@@ -41,7 +42,6 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.cdc.mysql.RowDeseriali
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.EventDataDeserializationExceptionData;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.EventMeshGtidSet;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlConstants;
-import org.apache.eventmesh.connector.jdbc.dialect.mysql.MysqlDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlJdbcContext;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlSourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
@@ -617,8 +617,11 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
         Builder builder = DataChanges.newBuilder();
         if (CollectionUtils.isNotEmpty(columns)) {
             fields = columns.stream()
-                .map(col -> new Field(col, col.isNotNull(), col.getName(), tableId.toString()))
-                .collect(Collectors.toList());
+                .map(col -> {
+                    Column rebuild = Column.newBuilder().withName(col.getName()).withDataType(col.getDataType()).withJdbcType(col.getJdbcType())
+                        .build();
+                    return new Field(rebuild, col.isNotNull(), col.getName(), tableId.toString());
+                }).collect(Collectors.toList());
         }
         int columnsSize = orderColumnMap.size();
         for (Pair<Pair<Serializable[], BitSet>, Pair<Serializable[], BitSet>> pair : rows) {
@@ -638,7 +641,7 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
                     beforeValues.put(orderColumnMap.get(index + 1).getName(), beforeRows[index]);
                 }
                 builder.withBefore(beforeValues);
-                Field beforeField = new Field().withField(Payload.BEFORE_FIELD).withName("payload.before").withRequired(false);
+                Field beforeField = new Field().withField(Payload.BEFORE_FIELD).withName(Payload.PAYLOAD_BEFORE).withRequired(false);
                 beforeField.withRequired(true).withFields(fields);
                 schema.add(beforeField);
             }
@@ -656,7 +659,7 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
                     afterValues.put(orderColumnMap.get(index + 1).getName(), afterRows[index]);
                 }
                 builder.withBefore(afterValues);
-                Field afterField = new Field().withField(Payload.AFTER_FIELD).withName("payload.after").withRequired(false);
+                Field afterField = new Field().withField(Payload.AFTER_FIELD).withName(Payload.PAYLOAD_AFTER).withRequired(false);
                 afterField.withRequired(true).withFields(fields);
                 schema.add(afterField);
             }

@@ -45,4 +45,14 @@ public class JsonType extends AbstractType {
     public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
         return "json";
     }
+
+    /**
+     * @param databaseDialect
+     * @param column
+     * @return
+     */
+    @Override
+    public String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
+        return "CAST(? AS JSON)";
+    }
 }

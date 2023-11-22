@@ -30,6 +30,10 @@ public final class Payload {
 
     public static final String SOURCE = "source";
 
+    public static final String PAYLOAD_BEFORE = "payload.before";
+
+    public static final String PAYLOAD_AFTER = "payload.after";
+
     @Getter
     @Setter
     private SourceMateData source;

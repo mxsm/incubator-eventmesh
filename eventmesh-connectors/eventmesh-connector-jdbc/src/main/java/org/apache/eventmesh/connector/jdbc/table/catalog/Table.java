@@ -18,7 +18,6 @@
 package org.apache.eventmesh.connector.jdbc.table.catalog;
 
 import java.util.List;
-import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,7 +45,7 @@ public class Table {
         this.comment = comment;
     }
 
-    public void put(String key, Object value){
+    public void put(String key, Object value) {
         options.put(key, value);
     }
 

@@ -1,11 +1,12 @@
 package org.apache.eventmesh.connector.jdbc.type.mysql;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.type.AbstractType;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 
 public class BitType extends AbstractType {

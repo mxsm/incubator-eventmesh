@@ -21,6 +21,7 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 
 import java.sql.JDBCType;
+import java.util.List;
 
 import lombok.Data;
 
@@ -32,14 +33,16 @@ public class MysqlColumn extends Column<MysqlColumn> {
 
     public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        String charsetName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName, autoIncremented, generated, collationName);
+        String charsetName, List<String> enumValues) {
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName,
+            autoIncremented, generated, collationName, enumValues);
     }
 
     public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        int order, String charsetName) {
-        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName, autoIncremented, generated, collationName);
+        int order, String charsetName, List<String> enumValues) {
+        super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName,
+            autoIncremented, generated, collationName, enumValues);
     }
 
     public MysqlColumn() {
@@ -49,17 +52,17 @@ public class MysqlColumn extends Column<MysqlColumn> {
     public static MysqlColumn of(
         String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        String charsetName) {
+        String charsetName, List<String> enumValues) {
         return new MysqlColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            autoIncremented, generated, collationName, charsetName);
+            autoIncremented, generated, collationName, charsetName, enumValues);
     }
 
     public static MysqlColumn of(
         String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull, String comment,
         Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName, int order,
-        String charsetName) {
+        String charsetName, List<String> enumValues) {
         return new MysqlColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            autoIncremented, generated, collationName, order, charsetName);
+            autoIncremented, generated, collationName, order, charsetName, enumValues);
     }
 
     /**

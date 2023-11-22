@@ -17,15 +17,8 @@
 
 package org.apache.eventmesh.connector.jdbc.sink.handle;
 
-import org.apache.eventmesh.connector.jdbc.CatalogChanges;
 import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
-import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseType;
-import org.apache.eventmesh.connector.jdbc.dialect.SqlStatementAssembler;
-import org.apache.eventmesh.connector.jdbc.event.SchemaChangeEventType;
-import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
-import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +36,6 @@ public abstract class AbstractSchemaChangeHandle implements SchemaChangeHandle {
     public void handle(JdbcConnectData connectData) throws Exception {
 
     }
-
 
 
 }

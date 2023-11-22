@@ -20,7 +20,6 @@ package org.apache.eventmesh.connector.jdbc.source.dialect.snapshot;
 import org.apache.eventmesh.common.ThreadPoolFactory;
 import org.apache.eventmesh.connector.jdbc.DataChanges;
 import org.apache.eventmesh.connector.jdbc.DataChanges.Builder;
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.Field;
 import org.apache.eventmesh.connector.jdbc.JdbcContext;
 import org.apache.eventmesh.connector.jdbc.OffsetContext;
@@ -29,6 +28,7 @@ import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.Schema;
 import org.apache.eventmesh.connector.jdbc.UniversalJdbcContext;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.event.Event;
 import org.apache.eventmesh.connector.jdbc.event.InsertDataEvent;
 import org.apache.eventmesh.connector.jdbc.source.AbstractEngine;
@@ -230,7 +230,11 @@ public abstract class AbstractSnapshotEngine<DbDialect extends DatabaseDialect<J
             List<? extends Column> columns = tableSchema.getColumns();
             if (CollectionUtils.isNotEmpty(columns)) {
                 List<Field> fields = columns.stream()
-                    .map(col -> new Field(col, col.isNotNull(), col.getName(), tableId.toString()))
+                    .map(col -> {
+                        Column rebuild = Column.newBuilder().withName(col.getName()).withDataType(col.getDataType()).withJdbcType(col.getJdbcType())
+                            .build();
+                        return new Field(rebuild, col.isNotNull(), col.getName(), tableId.toString());
+                    })
                     .collect(Collectors.toList());
                 field.withRequired(true).withFields(fields);
             }

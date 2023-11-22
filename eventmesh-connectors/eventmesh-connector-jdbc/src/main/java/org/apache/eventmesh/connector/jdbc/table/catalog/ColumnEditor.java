@@ -146,5 +146,4 @@ public interface ColumnEditor<CE extends ColumnEditor, Col extends Column> {
     Col build();
 
 
-
 }

@@ -17,20 +17,20 @@
 
 package org.apache.eventmesh.connector.jdbc.type;
 
-import java.util.List;
-
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+
+import java.util.List;
 
 public interface Type {
 
     List<String> ofRegistrationKeys();
 
-    String getDefaultValue(DatabaseDialect<?> databaseDialect,Column<?> column);
+    String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column);
 
-    String getTypeName(DatabaseDialect<?> databaseDialect,Column<?> column);
+    String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column);
 
-    default String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column){
+    default String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
         return databaseDialect.getQueryBindingWithValueCast(column);
     }
 }

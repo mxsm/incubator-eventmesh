@@ -17,6 +17,8 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect;
 
+import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.Function;
@@ -39,8 +41,18 @@ public final class SqlStatementAssembler {
         return this;
     }
 
-    public SqlStatementAssembler appendSqlSliceLists(String delimiter, Collection<String> columnNames, Function<String,String> function) {
-        for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext();) {
+    public SqlStatementAssembler appendSqlSliceLists(String delimiter, Collection<String> columnNames, Function<String, String> function) {
+        for (Iterator<String> iterator = columnNames.iterator(); iterator.hasNext(); ) {
+            statement.append(function.apply(iterator.next()));
+            if (iterator.hasNext()) {
+                statement.append(delimiter);
+            }
+        }
+        return this;
+    }
+
+    public SqlStatementAssembler appendSqlSliceOfColumns(String delimiter, Collection<Column<?>> columns, Function<Column<?>, String> function) {
+        for (Iterator<Column<?>> iterator = columns.iterator(); iterator.hasNext(); ) {
             statement.append(function.apply(iterator.next()));
             if (iterator.hasNext()) {
                 statement.append(delimiter);

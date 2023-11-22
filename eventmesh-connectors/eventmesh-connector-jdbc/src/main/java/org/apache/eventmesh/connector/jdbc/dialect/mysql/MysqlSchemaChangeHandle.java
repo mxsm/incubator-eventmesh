@@ -18,7 +18,6 @@
 package org.apache.eventmesh.connector.jdbc.dialect.mysql;
 
 import org.apache.eventmesh.connector.jdbc.sink.handle.AbstractSchemaChangeHandle;
-import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 
 public class MysqlSchemaChangeHandle extends AbstractSchemaChangeHandle {
 

@@ -18,9 +18,9 @@
 package org.apache.eventmesh.connector.jdbc.source;
 
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialectFactory;
 import org.apache.eventmesh.connector.jdbc.event.Event;
 import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialectFactory;
 import org.apache.eventmesh.connector.jdbc.source.dialect.cdc.CdcEngine;
 import org.apache.eventmesh.connector.jdbc.source.dialect.cdc.CdcEngineFactory;
 import org.apache.eventmesh.connector.jdbc.source.dialect.snapshot.SnapshotEngine;

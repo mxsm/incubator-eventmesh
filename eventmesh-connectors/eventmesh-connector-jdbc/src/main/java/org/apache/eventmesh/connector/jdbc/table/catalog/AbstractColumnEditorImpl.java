@@ -74,9 +74,9 @@ public abstract class AbstractColumnEditorImpl<CE extends ColumnEditor, Col exte
     /**
      * Indicates if the column is auto incremented. For example: MySQL
      */
-    private boolean autoIncremented = false;
+    private Boolean autoIncremented;
 
-    private boolean generated = false;
+    private Boolean generated;
 
     private List<String> enumValues;
 
@@ -319,5 +319,9 @@ public abstract class AbstractColumnEditorImpl<CE extends ColumnEditor, Col exte
 
     public String ofCharsetName() {
         return this.charsetName;
+    }
+
+    public List<String> ofEnumValues() {
+        return this.enumValues;
     }
 }

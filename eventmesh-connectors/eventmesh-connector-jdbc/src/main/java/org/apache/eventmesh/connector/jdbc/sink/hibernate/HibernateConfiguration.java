@@ -52,12 +52,12 @@ public final class HibernateConfiguration {
             return this;
         }
 
-        public HibernateConfigurationBuilder withDruidMaxActive(String maxActive){
+        public HibernateConfigurationBuilder withDruidMaxActive(String maxActive) {
             configuration.setProperty("maxActive", maxActive);
             return this;
         }
 
-        public HibernateConfigurationBuilder withShowSql(boolean showSql){
+        public HibernateConfigurationBuilder withShowSql(boolean showSql) {
             configuration.setProperty("hibernate.show_sql", Boolean.toString(showSql));
             return this;
         }

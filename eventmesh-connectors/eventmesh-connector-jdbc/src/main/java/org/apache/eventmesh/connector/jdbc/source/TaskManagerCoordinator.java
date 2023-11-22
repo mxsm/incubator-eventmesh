@@ -100,7 +100,7 @@ public class TaskManagerCoordinator {
         for (int index = 0; index < BATCH_MAX; ++index) {
             try {
                 ConnectRecord record = recordBlockingQueue.poll(3, TimeUnit.SECONDS);
-                System.out.println("+++++++++++++++++++++"+JsonUtils.toJSONString(record));
+                System.out.println("+++++++++++++++++++++" + JsonUtils.toJSONString(record));
                 if (Objects.isNull(record)) {
                     break;
                 }

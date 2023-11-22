@@ -174,7 +174,7 @@ public class ColumnDefinitionParserListener extends MySqlParserBaseListener {
                 columnEditor.enumValues(values);
             }
 
-            if(StringUtils.isNotBlank(dataTypeString)){
+            if (StringUtils.isNotBlank(dataTypeString)) {
                 EventMeshDataType eventMeshType = this.dataTypeConvertor.toEventMeshType(dataTypeString);
                 this.columnEditor.withEventMeshType(eventMeshType);
                 this.columnEditor.withJdbcType(this.dataTypeConvertor.toJDBCType(dataTypeString));

@@ -40,8 +40,6 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import com.mysql.cj.CharsetMapping;
-
 public class MysqlAntlr4DdlParser extends Antlr4DdlParser<MySqlLexer, MySqlParser> {
 
     private DdlParserCallback callback;

@@ -26,7 +26,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class TinyIntType extends AbstractType {
+
     public static final TinyIntType INSTANCE = new TinyIntType();
+
     /**
      * @return
      */
@@ -44,7 +46,7 @@ public class TinyIntType extends AbstractType {
     public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
 
         final int size = Optional.ofNullable(column.getColumnLength()).orElse(0L).intValue();
-        if(size > 0){
+        if (size > 0) {
             return String.format("tinyint(%d)", size);
         }
         return "tinyint";

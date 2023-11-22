@@ -17,8 +17,8 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect.mysql;
 
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialectFactory;
 
 public class MysqlDatabaseDialectFactory implements DatabaseDialectFactory {

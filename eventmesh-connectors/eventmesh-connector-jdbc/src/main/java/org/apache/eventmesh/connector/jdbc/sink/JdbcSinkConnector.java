@@ -18,16 +18,16 @@
 package org.apache.eventmesh.connector.jdbc.sink;
 
 import org.apache.eventmesh.common.utils.JsonUtils;
-import org.apache.eventmesh.connector.jdbc.Payload;
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
+import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialectFactory;
 import org.apache.eventmesh.connector.jdbc.sink.config.JdbcSinkConfig;
 import org.apache.eventmesh.connector.jdbc.sink.handle.DialectAssemblyLine;
-import org.apache.eventmesh.connector.jdbc.sink.handle.DialectAssemblyLineImpl;
+import org.apache.eventmesh.connector.jdbc.sink.handle.GeneralDialectAssemblyLine;
 import org.apache.eventmesh.connector.jdbc.sink.hibernate.HibernateConfiguration;
 import org.apache.eventmesh.connector.jdbc.source.JdbcAllFactoryLoader;
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialectFactory;
 import org.apache.eventmesh.openconnect.api.config.Config;
 import org.apache.eventmesh.openconnect.api.connector.ConnectorContext;
 import org.apache.eventmesh.openconnect.api.connector.SinkConnectorContext;
@@ -104,7 +104,7 @@ public class JdbcSinkConnector implements Sink {
         this.databaseDialect = databaseDialectFactory.createDatabaseDialect(this.sinkConfig.getSinkConnectorConfig().getJdbcConfig());
         this.databaseDialect.init();
 
-        this.dialectAssemblyLine = new DialectAssemblyLineImpl(this.databaseDialect,
+        this.dialectAssemblyLine = new GeneralDialectAssemblyLine(this.databaseDialect,
             this.sessionFactory.unwrap(SessionFactoryImplementor.class).getJdbcServices().getDialect());
 
     }

@@ -36,9 +36,9 @@ public abstract class AbstractType implements Type {
             case DOUBLE_TYPE:
                 return defaultValue.toString();
             case BOOLEAN_TYPE:
-                return databaseDialect.getBooleanFormatted((boolean)defaultValue);
+                return databaseDialect.getBooleanFormatted((boolean) defaultValue);
             case STRING_TYPE:
-                  return "'" + defaultValue + "'";
+                return "'" + defaultValue + "'";
         }
         throw new IllegalArgumentException("Unsupported data type: " + dataType);
     }

@@ -19,7 +19,6 @@ package org.apache.eventmesh.connector.jdbc.table.type;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class MapType<K, V> {

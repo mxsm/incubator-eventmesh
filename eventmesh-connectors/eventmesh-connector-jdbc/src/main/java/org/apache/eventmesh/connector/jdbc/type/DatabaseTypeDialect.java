@@ -21,7 +21,7 @@ public interface DatabaseTypeDialect {
         return EMPTY_STRING;
     }
 
-    default String getChartsetOrCollateFormatted(Column<?> column) {
+    default String getCharsetOrCollateFormatted(Column<?> column) {
         return EMPTY_STRING;
     }
 
@@ -29,7 +29,7 @@ public interface DatabaseTypeDialect {
         return EMPTY_STRING;
     }
 
-    default String getQueryBindingWithValueCast(Column<?> column){
+    default String getQueryBindingWithValueCast(Column<?> column) {
         return "?";
     }
 }

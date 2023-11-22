@@ -17,17 +17,11 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect;
 
-import org.apache.eventmesh.common.utils.LogUtils;
-import org.apache.eventmesh.connector.jdbc.CatalogChanges;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
-import org.apache.eventmesh.connector.jdbc.event.SchemaChangeEventType;
 import org.apache.eventmesh.connector.jdbc.exception.JdbcConnectionException;
-import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
-import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
-import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 import org.apache.eventmesh.connector.jdbc.type.Type;
 
@@ -36,11 +30,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -78,7 +69,7 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, 
         return typeRegisters.get(column.getJdbcType().getName());
     }
 
-    protected void registerTypes(){
+    protected void registerTypes() {
         registerType(EventMeshDataType.BOOLEAN_TYPE);
         registerType(EventMeshDataType.BOOLEAN_ARRAY_TYPE);
         registerType(EventMeshDataType.BYTE_ARRAY_TYPE);
@@ -102,8 +93,8 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, 
         registerType(EventMeshDataType.VOID_TYPE);
     }
 
-    protected void registerType(Type type){
-        Optional.ofNullable(type.ofRegistrationKeys()).orElse(new ArrayList<>(0)).forEach(key->{
+    protected void registerType(Type type) {
+        Optional.ofNullable(type.ofRegistrationKeys()).orElse(new ArrayList<>(0)).forEach(key -> {
             typeRegisters.put(key, type);
         });
     }

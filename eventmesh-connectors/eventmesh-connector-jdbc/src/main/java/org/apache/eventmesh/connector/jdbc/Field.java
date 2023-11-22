@@ -17,9 +17,9 @@
 
 package org.apache.eventmesh.connector.jdbc;
 
-import java.util.List;
-
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

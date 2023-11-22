@@ -1,10 +1,14 @@
 package org.apache.eventmesh.connector.jdbc.type.mysql;
 
-import java.util.Arrays;
-import java.util.List;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.type.AbstractType;
+
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class SetType extends AbstractType {
@@ -19,6 +23,10 @@ public class SetType extends AbstractType {
     @Override
     public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
         //https://dev.mysql.com/doc/refman/8.0/en/set.html
-        return null;
+        List<String> enumValues = column.getEnumValues();
+        if (CollectionUtils.isNotEmpty(enumValues)) {
+            return "SET(" + enumValues.stream().map(val -> "'" + val + "'").collect(Collectors.joining(", ")) + ")";
+        }
+        return "SET()";
     }
 }

@@ -17,8 +17,6 @@
 
 package org.apache.eventmesh.connector.jdbc.event;
 
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseType;
-
 import org.apache.commons.lang3.StringUtils;
 
 public enum SchemaChangeEventType {

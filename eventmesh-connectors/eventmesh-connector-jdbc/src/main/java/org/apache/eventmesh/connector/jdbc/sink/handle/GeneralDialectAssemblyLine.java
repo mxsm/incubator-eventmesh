@@ -30,7 +30,6 @@ import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
-import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.type.Type;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,13 +46,13 @@ import org.hibernate.dialect.Dialect;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class DialectAssemblyLineImpl implements DialectAssemblyLine {
+public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
 
     private final DatabaseDialect databaseDialect;
 
     private final Dialect hibernateDialect;
 
-    public DialectAssemblyLineImpl(DatabaseDialect databaseDialect, Dialect hibernateDialect) {
+    public GeneralDialectAssemblyLine(DatabaseDialect databaseDialect, Dialect hibernateDialect) {
         this.databaseDialect = databaseDialect;
         this.hibernateDialect = hibernateDialect;
     }
@@ -127,7 +126,7 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
      * @return
      */
     @Override
-    public String getInsertStatement(SourceMateData sourceMateData, Schema schema,String originStatement) {
+    public String getInsertStatement(SourceMateData sourceMateData, Schema schema, String originStatement) {
         TableId tableId = new TableId(sourceMateData.getCatalogName(), sourceMateData.getSchemaName(), sourceMateData.getTableName());
 
         List<Field> afterFields =
@@ -135,25 +134,31 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
 
         SqlStatementAssembler sqlAssembler = new SqlStatementAssembler();
         sqlAssembler.appendSqlSlice("INSERT INTO ");
-        sqlAssembler.appendSqlSliceLists(((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedTableName(tableId));
+        sqlAssembler.appendSqlSliceLists(((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedTableName(tableId));
         sqlAssembler.appendSqlSlice(" (");
         // assemble columns
-        List<String> columns =afterFields.get(0).getFields().stream().map(column -> column.getName()).collect(Collectors.toList());
-        sqlAssembler.appendSqlSliceLists(", ",columns,columnName->columnName);
+        Field afterField = afterFields.get(0);
+        List<String> columns = afterField.getFields().stream().map(column -> column.getName()).collect(Collectors.toList());
+        sqlAssembler.appendSqlSliceLists(", ", columns, columnName -> columnName);
         sqlAssembler.appendSqlSlice(") VALUES (");
         //assemble values
-        sqlAssembler.appendSqlSlice("");
+        sqlAssembler.appendSqlSliceOfColumns(", ", afterField.getFields().stream().map(item -> item.getColumn()).collect(Collectors.toList()),
+            column -> getDmlBindingValue(column));
         sqlAssembler.appendSqlSlice(")");
 
         return sqlAssembler.confirm();
     }
 
+    private String getDmlBindingValue(Column<?> column) {
+        Type type = this.databaseDialect.getType(column);
+        return type.getQueryBindingWithValue(this.databaseDialect, column);
+    }
 
     private String assembleCreateDatabaseSql(CatalogChanges catalogChanges) {
         SqlStatementAssembler assembler = new SqlStatementAssembler();
         assembler.appendSqlSliceLists("CREATE DATABASE IF NOT EXISTS ");
         assembler.appendSqlSlice(
-            ((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedText(catalogChanges.getCatalog().getName()));
+            ((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedText(catalogChanges.getCatalog().getName()));
         return assembler.confirm();
     }
 
@@ -161,7 +166,7 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         SqlStatementAssembler assembler = new SqlStatementAssembler();
         assembler.appendSqlSliceLists("DROP DATABASE IF EXISTS ");
         assembler.appendSqlSlice(
-            ((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedText(catalogChanges.getCatalog().getName()));
+            ((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedText(catalogChanges.getCatalog().getName()));
         return assembler.confirm();
     }
 
@@ -175,7 +180,7 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         SqlStatementAssembler assembler = new SqlStatementAssembler();
         assembler.appendSqlSlice("CREATE TABLE IF NOT EXISTS ");
         Table table = catalogChanges.getTable();
-        assembler.appendSqlSlice(((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedTableName(table.getTableId()));
+        assembler.appendSqlSlice(((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedTableName(table.getTableId()));
         assembler.appendSqlSlice(" (");
         // assemble columns
         List<? extends Column> columns = catalogChanges.getColumns().stream().sorted(Comparator.comparingInt(Column::getOrder))
@@ -185,20 +190,20 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         assembler.appendSqlSliceLists(", ", columnNames, (columnName) -> {
             StringBuilder builder = new StringBuilder();
             //assemble column name
-            builder.append(((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedText(columnName));
+            builder.append(((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedText(columnName));
             //assemble column type
             Column column = columnMap.get(columnName);
             String typeName = getTypeName(column);
             builder.append(" ").append(typeName);
 
-            builder.append(" ").append(this.databaseDialect.getChartsetOrCollateFormatted(column));
+            builder.append(" ").append(this.databaseDialect.getCharsetOrCollateFormatted(column));
             if (Optional.ofNullable(table.getPrimaryKey().getColumnNames()).orElse(new ArrayList<>(0)).contains(columnName)) {
                 builder.append(" NOT NULL ");
                 if (column.isAutoIncremented()) {
                     builder.append(this.databaseDialect.getAutoIncrementFormatted(column));
                 }
             } else {
-                if(column.isNotNull()){
+                if (column.isNotNull()) {
                     builder.append(" NOT NULL ");
                 }
                 builder.append(" ").append(this.databaseDialect.getDefaultValueFormatted(column));
@@ -209,7 +214,7 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         //assemble primary key and others key
         assembler.appendSqlSlice(", PRIMARY KEY(");
         assembler.appendSqlSliceLists(",", catalogChanges.getTable().getPrimaryKey().getColumnNames(),
-            (columnName) -> ((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedText(columnName));
+            (columnName) -> ((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedText(columnName));
         assembler.appendSqlSlice(")");
         assembler.appendSqlSlice(")");
         assembler.appendSqlSlice(this.databaseDialect.getTableOptionsFormatted(catalogChanges.getTable()));
@@ -219,7 +224,8 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
     private String assembleDropTableSql(CatalogChanges catalogChanges) {
         SqlStatementAssembler assembler = new SqlStatementAssembler();
         assembler.appendSqlSlice("DROP TABLE IF EXISTS ");
-        assembler.appendSqlSlice(((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedTableName(catalogChanges.getTable().getTableId()));
+        assembler.appendSqlSlice(
+            ((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedTableName(catalogChanges.getTable().getTableId()));
         return assembler.confirm();
     }
 

@@ -17,16 +17,16 @@
 
 package org.apache.eventmesh.connector.jdbc.table.type;
 
+import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.type.Type;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
-import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
-import org.apache.eventmesh.connector.jdbc.type.Type;
 
 public enum EventMeshDataType implements Type {
     BYTE_TYPE(Byte.class, SQLType.TINYINT, "INT_8"),

@@ -17,11 +17,9 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect.mysql;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.eventmesh.connector.jdbc.DataTypeConvertor;
 import org.apache.eventmesh.connector.jdbc.JdbcDriverMetaData;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
-import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
 import org.apache.eventmesh.connector.jdbc.connection.mysql.MysqlJdbcConnection;
 import org.apache.eventmesh.connector.jdbc.dialect.AbstractGeneralDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseType;
@@ -47,8 +45,9 @@ import org.apache.eventmesh.connector.jdbc.type.mysql.SetType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.TinyIntType;
 import org.apache.eventmesh.connector.jdbc.utils.MysqlUtils;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.Connection;
-import java.sql.JDBCType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -64,7 +63,7 @@ import com.mysql.cj.MysqlType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJdbcConnection,MysqlColumn> {
+public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJdbcConnection, MysqlColumn> {
 
     private MysqlJdbcConnection connection;
 
@@ -360,6 +359,7 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
     public String getAutoIncrementFormatted(Column<?> column) {
         return " AUTO_INCREMENT ";
     }
+
     @Override
     public String getDefaultValueFormatted(Column<?> column) {
         StringBuilder builder = new StringBuilder();
@@ -369,21 +369,21 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
             return builder.toString();
         }
         Type type = getType(column);
-        if(null == type && column.getDefaultValue() == null){
-            return  builder.append(" DEFAULT NULL ").toString();
+        if (null == type && column.getDefaultValue() == null) {
+            return builder.append(" DEFAULT NULL ").toString();
         }
         return builder.append(" DEFAULT ").append(type.getDefaultValue(this, column)).toString();
     }
 
     @Override
-    public String getChartsetOrCollateFormatted(Column<?> column) {
+    public String getCharsetOrCollateFormatted(Column<?> column) {
         StringBuilder builder = new StringBuilder();
         String charsetName = column.getCharsetName();
-        if(StringUtils.isNotBlank(charsetName)){
+        if (StringUtils.isNotBlank(charsetName)) {
             builder.append(" CHARACTER SET ").append(charsetName).append(" ");
         }
         String collationName = column.getCollationName();
-        if(StringUtils.isNotBlank(collationName)){
+        if (StringUtils.isNotBlank(collationName)) {
             builder.append(" COLLATE ").append(collationName).append(" ");
         }
 
@@ -392,34 +392,34 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
 
     @Override
     public String getTableOptionsFormatted(Table table) {
-        
+
         Options options = table.getOptions();
-        if(Objects.isNull(options) || options.isEmpty()){
+        if (Objects.isNull(options) || options.isEmpty()) {
             return "";
         }
         StringBuilder builder = new StringBuilder();
-        String engine = (String)options.get("ENGINE");
-        if(StringUtils.isNotBlank(engine)){
-            builder.append(String.format("ENGINE=%s ",engine));
+        String engine = (String) options.get("ENGINE");
+        if (StringUtils.isNotBlank(engine)) {
+            builder.append(String.format("ENGINE=%s ", engine));
         }
-        String autoIncrementNumber = (String)options.get("AUTO_INCREMENT");
-        if(StringUtils.isNotBlank(autoIncrementNumber)){
-            builder.append(String.format("AUTO_INCREMENT=%s ",autoIncrementNumber));
+        String autoIncrementNumber = (String) options.get("AUTO_INCREMENT");
+        if (StringUtils.isNotBlank(autoIncrementNumber)) {
+            builder.append(String.format("AUTO_INCREMENT=%s ", autoIncrementNumber));
         }
-        String charset = (String)options.get("CHARSET");
-        if(StringUtils.isNotBlank(charset)){
-            builder.append(String.format("DEFAULT CHARSET=%s ",charset));
+        String charset = (String) options.get("CHARSET");
+        if (StringUtils.isNotBlank(charset)) {
+            builder.append(String.format("DEFAULT CHARSET=%s ", charset));
         }
 
-        String collate = (String)options.get("COLLATE");
-        if(StringUtils.isNotBlank(collate)){
-            builder.append(String.format(" COLLATE=%s ",collate));
+        String collate = (String) options.get("COLLATE");
+        if (StringUtils.isNotBlank(collate)) {
+            builder.append(String.format(" COLLATE=%s ", collate));
         }
 
         String comment = table.getComment();
-        if(StringUtils.isNotBlank(comment)){
-            builder.append(String.format(" COMMENT='%s' ",comment));
+        if (StringUtils.isNotBlank(comment)) {
+            builder.append(String.format(" COMMENT='%s' ", comment));
         }
-        return  builder.toString();
+        return builder.toString();
     }
 }

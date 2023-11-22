@@ -37,8 +37,8 @@ public class SinkConnectorConfig {
      */
     private JdbcConfig jdbcConfig;
 
-    public String getDatabaseType(){
-       return  "mysql";
+    public String getDatabaseType() {
+        return "mysql";
     }
 }
 
