@@ -19,6 +19,8 @@ package org.apache.eventmesh.connector.jdbc.sink.handle;
 
 import org.apache.eventmesh.common.utils.LogUtils;
 import org.apache.eventmesh.connector.jdbc.CatalogChanges;
+import org.apache.eventmesh.connector.jdbc.Field;
+import org.apache.eventmesh.connector.jdbc.Schema;
 import org.apache.eventmesh.connector.jdbc.dialect.AbstractGeneralDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseType;
@@ -125,13 +127,19 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
      * @return
      */
     @Override
-    public String getInsertStatement(SourceMateData sourceMateData, TableSchema tableSchema, String originStatement) {
+    public String getInsertStatement(SourceMateData sourceMateData, Schema schema,String originStatement) {
+        TableId tableId = new TableId(sourceMateData.getCatalogName(), sourceMateData.getSchemaName(), sourceMateData.getTableName());
+
+        List<Field> afterFields =
+            schema.getFields().stream().filter(field -> StringUtils.equals(field.getField(), "after")).collect(Collectors.toList());
+
         SqlStatementAssembler sqlAssembler = new SqlStatementAssembler();
         sqlAssembler.appendSqlSlice("INSERT INTO ");
-        sqlAssembler.appendSqlSliceLists(((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedTableName(tableSchema.getTableId()));
+        sqlAssembler.appendSqlSliceLists(((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedTableName(tableId));
         sqlAssembler.appendSqlSlice(" (");
         // assemble columns
-        sqlAssembler.appendSqlSliceLists("");
+        List<String> columns =afterFields.get(0).getFields().stream().map(column -> column.getName()).collect(Collectors.toList());
+        sqlAssembler.appendSqlSliceLists(", ",columns,columnName->columnName);
         sqlAssembler.appendSqlSlice(") VALUES (");
         //assemble values
         sqlAssembler.appendSqlSlice("");
@@ -139,6 +147,7 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
 
         return sqlAssembler.confirm();
     }
+
 
     private String assembleCreateDatabaseSql(CatalogChanges catalogChanges) {
         SqlStatementAssembler assembler = new SqlStatementAssembler();

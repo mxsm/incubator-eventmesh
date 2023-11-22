@@ -18,6 +18,7 @@
 package org.apache.eventmesh.connector.jdbc.sink.handle;
 
 import org.apache.eventmesh.connector.jdbc.CatalogChanges;
+import org.apache.eventmesh.connector.jdbc.Schema;
 import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 
@@ -25,7 +26,7 @@ public interface DialectAssemblyLine {
 
     String getDatabaseOrTableStatement(SourceMateData sourceMateData, CatalogChanges catalogChanges,String statement);
 
-    String getInsertStatement(SourceMateData sourceMateData, TableSchema tableSchema,String originStatement);
+    String getInsertStatement(SourceMateData sourceMateData, Schema schema,String originStatement);
 
     String getUpsertStatement();
 

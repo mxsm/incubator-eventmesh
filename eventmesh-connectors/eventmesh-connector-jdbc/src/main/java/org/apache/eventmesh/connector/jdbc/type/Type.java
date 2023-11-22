@@ -29,4 +29,8 @@ public interface Type {
     String getDefaultValue(DatabaseDialect<?> databaseDialect,Column<?> column);
 
     String getTypeName(DatabaseDialect<?> databaseDialect,Column<?> column);
+
+    default String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column){
+        return databaseDialect.getQueryBindingWithValueCast(column);
+    }
 }

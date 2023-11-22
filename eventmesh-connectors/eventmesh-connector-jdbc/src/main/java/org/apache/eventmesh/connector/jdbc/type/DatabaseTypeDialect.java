@@ -28,4 +28,8 @@ public interface DatabaseTypeDialect {
     default String getTableOptionsFormatted(Table table) {
         return EMPTY_STRING;
     }
+
+    default String getQueryBindingWithValueCast(Column<?> column){
+        return "?";
+    }
 }

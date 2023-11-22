@@ -226,11 +226,11 @@ public abstract class AbstractSnapshotEngine<DbDialect extends DatabaseDialect<J
                 .serverId(sourceConnectorConfig.getMysqlConfig().getServerId())
                 .build();
             TableSchema tableSchema = universalJdbcContext.getCatalogTableSet().getTableSchema(tableId);
-            Field field = new Field().withField("after").withType("field").withName("payload.after").withRequired(false);
+            Field field = new Field().withField("after").withName("payload.after").withRequired(false);
             List<? extends Column> columns = tableSchema.getColumns();
             if (CollectionUtils.isNotEmpty(columns)) {
                 List<Field> fields = columns.stream()
-                    .map(col -> new Field(col.getDataType().getName(), col.isNotNull(), col.getName(), tableId.toString()))
+                    .map(col -> new Field(col, col.isNotNull(), col.getName(), tableId.toString()))
                     .collect(Collectors.toList());
                 field.withRequired(true).withFields(fields);
             }
