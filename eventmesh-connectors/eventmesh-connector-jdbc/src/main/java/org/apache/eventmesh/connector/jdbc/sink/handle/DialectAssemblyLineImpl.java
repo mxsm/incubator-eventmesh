@@ -202,8 +202,8 @@ public class DialectAssemblyLineImpl implements DialectAssemblyLine {
         assembler.appendSqlSliceLists(",", catalogChanges.getTable().getPrimaryKey().getColumnNames(),
             (columnName) -> ((AbstractGeneralDatabaseDialect<?,?>) databaseDialect).getQualifiedText(columnName));
         assembler.appendSqlSlice(")");
-        catalogChanges.getTable();
         assembler.appendSqlSlice(")");
+        assembler.appendSqlSlice(this.databaseDialect.getTableOptionsFormatted(catalogChanges.getTable()));
         return assembler.confirm();
     }
 

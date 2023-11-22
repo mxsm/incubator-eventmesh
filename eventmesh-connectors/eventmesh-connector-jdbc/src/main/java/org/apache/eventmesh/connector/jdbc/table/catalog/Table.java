@@ -18,6 +18,7 @@
 package org.apache.eventmesh.connector.jdbc.table.catalog;
 
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -35,5 +36,18 @@ public class Table {
     private List<UniqueKey> uniqueKeys;
 
     private String comment;
+
+    private Options options = new Options();
+
+    public Table(TableId tableId, PrimaryKey primaryKey, List<UniqueKey> uniqueKeys, String comment) {
+        this.tableId = tableId;
+        this.primaryKey = primaryKey;
+        this.uniqueKeys = uniqueKeys;
+        this.comment = comment;
+    }
+
+    public void put(String key, Object value){
+        options.put(key, value);
+    }
 
 }

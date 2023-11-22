@@ -33,7 +33,9 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDialectSql;
 import org.apache.eventmesh.connector.jdbc.table.catalog.CatalogTable;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.catalog.DefaultColumn;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Options;
 import org.apache.eventmesh.connector.jdbc.table.catalog.PrimaryKey;
+import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumn;
@@ -387,5 +389,37 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
 
         return builder.toString();
     }
-}
+
+    @Override
+    public String getTableOptionsFormatted(Table table) {
+        
+        Options options = table.getOptions();
+        if(Objects.isNull(options) || options.isEmpty()){
+            return "";
+        }
+        StringBuilder builder = new StringBuilder();
+        String engine = (String)options.get("ENGINE");
+        if(StringUtils.isNotBlank(engine)){
+            builder.append(String.format("ENGINE=%s ",engine));
+        }
+        String autoIncrementNumber = (String)options.get("AUTO_INCREMENT");
+        if(StringUtils.isNotBlank(autoIncrementNumber)){
+            builder.append(String.format("AUTO_INCREMENT=%s ",autoIncrementNumber));
+        }
+        String charset = (String)options.get("CHARSET");
+        if(StringUtils.isNotBlank(charset)){
+            builder.append(String.format("DEFAULT CHARSET=%s ",charset));
+        }
+
+        String collate = (String)options.get("COLLATE");
+        if(StringUtils.isNotBlank(collate)){
+            builder.append(String.format(" COLLATE=%s ",collate));
+        }
+
+        String comment = table.getComment();
+        if(StringUtils.isNotBlank(comment)){
+            builder.append(String.format(" COMMENT='%s' ",comment));
+        }
+        return  builder.toString();
+    }
 }
