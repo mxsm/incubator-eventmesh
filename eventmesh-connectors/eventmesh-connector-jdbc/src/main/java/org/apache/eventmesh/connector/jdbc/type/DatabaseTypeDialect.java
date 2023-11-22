@@ -15,4 +15,12 @@ public interface DatabaseTypeDialect {
     default String getAutoIncrementFormatted(Column<?> column) {
         return EMPTY_STRING;
     }
+
+    default String getDefaultValueFormatted(Column<?> column) {
+        return EMPTY_STRING;
+    }
+
+    default String getChartsetOrCollateFormatted(Column<?> column) {
+        return EMPTY_STRING;
+    }
 }

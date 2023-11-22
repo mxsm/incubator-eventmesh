@@ -17,6 +17,7 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect.mysql;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.eventmesh.connector.jdbc.DataTypeConvertor;
 import org.apache.eventmesh.connector.jdbc.JdbcDriverMetaData;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
@@ -36,6 +37,7 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.PrimaryKey;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumn;
+import org.apache.eventmesh.connector.jdbc.type.Type;
 import org.apache.eventmesh.connector.jdbc.type.mysql.BitType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.EnumType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.JsonType;
@@ -356,4 +358,34 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
     public String getAutoIncrementFormatted(Column<?> column) {
         return " AUTO_INCREMENT ";
     }
+    @Override
+    public String getDefaultValueFormatted(Column<?> column) {
+        StringBuilder builder = new StringBuilder();
+        String defaultValueExpression = column.getDefaultValueExpression();
+        if (StringUtils.isNotBlank(defaultValueExpression)) {
+            builder.append(" DEFAULT ").append(column.getDefaultValueExpression());
+            return builder.toString();
+        }
+        Type type = getType(column);
+        if(null == type && column.getDefaultValue() == null){
+            return  builder.append(" DEFAULT NULL ").toString();
+        }
+        return builder.append(" DEFAULT ").append(type.getDefaultValue(this, column)).toString();
+    }
+
+    @Override
+    public String getChartsetOrCollateFormatted(Column<?> column) {
+        StringBuilder builder = new StringBuilder();
+        String charsetName = column.getCharsetName();
+        if(StringUtils.isNotBlank(charsetName)){
+            builder.append(" CHARACTER SET ").append(charsetName).append(" ");
+        }
+        String collationName = column.getCollationName();
+        if(StringUtils.isNotBlank(collationName)){
+            builder.append(" COLLATE ").append(collationName).append(" ");
+        }
+
+        return builder.toString();
+    }
+}
 }
