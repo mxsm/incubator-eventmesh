@@ -619,7 +619,7 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
             fields = columns.stream()
                 .map(col -> {
                     Column rebuild = Column.newBuilder().withName(col.getName()).withDataType(col.getDataType()).withJdbcType(col.getJdbcType())
-                        .build();
+                        .withNativeType(col.getNativeType()).build();
                     return new Field(rebuild, col.isNotNull(), col.getName(), tableId.toString());
                 }).collect(Collectors.toList());
         }

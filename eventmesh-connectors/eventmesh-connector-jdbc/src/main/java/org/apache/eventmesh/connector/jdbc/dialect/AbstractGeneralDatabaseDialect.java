@@ -66,7 +66,7 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, 
 
     @Override
     public Type getType(Column<?> column) {
-        return typeRegisters.get(column.getJdbcType().getName());
+        return Optional.ofNullable(typeRegisters.get(column.getJdbcType().getName())).orElseGet(()->typeRegisters.get(column.getNativeType()));
     }
 
     protected void registerTypes() {

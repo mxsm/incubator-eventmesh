@@ -33,16 +33,16 @@ public class MysqlColumn extends Column<MysqlColumn> {
 
     public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        String charsetName, List<String> enumValues) {
+        String charsetName, List<String> enumValues, String nativeType) {
         super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, 0, charsetName,
-            autoIncremented, generated, collationName, enumValues);
+            autoIncremented, generated, collationName, enumValues,nativeType);
     }
 
     public MysqlColumn(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        int order, String charsetName, List<String> enumValues) {
+        int order, String charsetName, List<String> enumValues, String nativeType) {
         super(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression, order, charsetName,
-            autoIncremented, generated, collationName, enumValues);
+            autoIncremented, generated, collationName, enumValues,nativeType);
     }
 
     public MysqlColumn() {
@@ -52,17 +52,17 @@ public class MysqlColumn extends Column<MysqlColumn> {
     public static MysqlColumn of(
         String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull,
         String comment, Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName,
-        String charsetName, List<String> enumValues) {
+        String charsetName, List<String> enumValues, String nativeType) {
         return new MysqlColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            autoIncremented, generated, collationName, charsetName, enumValues);
+            autoIncremented, generated, collationName, charsetName, enumValues, nativeType);
     }
 
     public static MysqlColumn of(
         String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull, String comment,
         Object defaultValue, String defaultValueExpression, boolean autoIncremented, boolean generated, String collationName, int order,
-        String charsetName, List<String> enumValues) {
+        String charsetName, List<String> enumValues, String nativeType) {
         return new MysqlColumn(name, dataType, jdbcType, columnLength, decimal, notNull, comment, defaultValue, defaultValueExpression,
-            autoIncremented, generated, collationName, order, charsetName, enumValues);
+            autoIncremented, generated, collationName, order, charsetName, enumValues,nativeType);
     }
 
     /**

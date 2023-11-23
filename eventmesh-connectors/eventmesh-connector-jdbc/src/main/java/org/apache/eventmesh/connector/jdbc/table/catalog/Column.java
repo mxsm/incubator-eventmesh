@@ -95,6 +95,9 @@ public class Column<Col extends Column> implements Serializable {
 
     protected List<String> enumValues;
 
+    //for mysql: varchar or json
+    protected String nativeType;
+
     public Column(String name, EventMeshDataType dataType, JDBCType jdbcType, Long columnLength, Integer decimal, boolean notNull, String comment,
         Object defaultValue, String defaultValueExpression, int order, String charsetName, boolean autoIncremented, boolean generated,
         String collationName) {
@@ -130,6 +133,7 @@ public class Column<Col extends Column> implements Serializable {
         this.generated = builder.generated;
         this.collationName = builder.collationName;
         this.enumValues = builder.enumValues;
+        this.nativeType = builder.nativeType;
     }
 
     public static Builder newBuilder() {
@@ -165,6 +169,8 @@ public class Column<Col extends Column> implements Serializable {
         protected boolean generated;
         protected String collationName;
         protected List<String> enumValues;
+        //for mysql: varchar or json
+        protected String nativeType;
 
         public Builder withName(String name) {
             this.name = name;
@@ -238,6 +244,11 @@ public class Column<Col extends Column> implements Serializable {
 
         public Builder withEnumValues(List<String> enumValues) {
             this.enumValues = enumValues;
+            return this;
+        }
+
+        public Builder withNativeType(String nativeType) {
+            this.nativeType = nativeType;
             return this;
         }
 
