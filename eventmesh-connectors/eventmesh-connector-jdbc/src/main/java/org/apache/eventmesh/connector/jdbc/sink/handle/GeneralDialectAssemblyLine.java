@@ -138,11 +138,12 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
         sqlAssembler.appendSqlSlice(" (");
         // assemble columns
         Field afterField = afterFields.get(0);
-        List<String> columns = afterField.getFields().stream().map(column -> column.getName()).collect(Collectors.toList());
-        sqlAssembler.appendSqlSliceLists(", ", columns, columnName -> columnName);
+        List<Column<?>> columns = afterField.getFields().stream().map(item -> item.getColumn()).collect(Collectors.toList());
+        sqlAssembler.appendSqlSliceOfColumns(", ", columns, column -> column.getName());
         sqlAssembler.appendSqlSlice(") VALUES (");
         //assemble values
-        sqlAssembler.appendSqlSliceOfColumns(", ", afterField.getFields().stream().map(item -> item.getColumn()).collect(Collectors.toList()),
+        
+        sqlAssembler.appendSqlSliceOfColumns(", ", columns,
             column -> getDmlBindingValue(column));
         sqlAssembler.appendSqlSlice(")");
 
@@ -151,6 +152,9 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
 
     private String getDmlBindingValue(Column<?> column) {
         Type type = this.databaseDialect.getType(column);
+        if (type == null) {
+            return this.databaseDialect.getQueryBindingWithValueCast(column);
+        }
         return type.getQueryBindingWithValue(this.databaseDialect, column);
     }
 

@@ -15,8 +15,7 @@ public class BitType extends AbstractType {
 
     @Override
     public String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-
-        return null;
+        return column.getDefaultValue() == null? " NULL " : String.format("b'%s'",column.getDefaultValue());
     }
 
     @Override
