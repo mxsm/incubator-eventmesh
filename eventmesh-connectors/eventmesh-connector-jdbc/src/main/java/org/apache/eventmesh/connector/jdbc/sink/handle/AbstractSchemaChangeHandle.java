@@ -18,14 +18,27 @@
 package org.apache.eventmesh.connector.jdbc.sink.handle;
 
 import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
+import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
+import org.hibernate.dialect.Dialect;
 
 @Slf4j
-public abstract class AbstractSchemaChangeHandle implements SchemaChangeHandle {
+public class AbstractSchemaChangeHandle implements SchemaChangeHandle {
 
-    private DatabaseDialect dialect;
+    protected DatabaseDialect eventMeshDialect;
+
+    protected Dialect hibernateDialect;
+
+    protected DialectAssemblyLine dialectAssemblyLine;
+
+    public AbstractSchemaChangeHandle(DatabaseDialect eventMeshDialect, Dialect hibernateDialect) {
+        this.eventMeshDialect = eventMeshDialect;
+        this.hibernateDialect = hibernateDialect;
+        this.dialectAssemblyLine = new GeneralDialectAssemblyLine(eventMeshDialect, hibernateDialect);
+    }
 
     /**
      * Handles a schema change using the specified JDBC connection data.
@@ -34,8 +47,19 @@ public abstract class AbstractSchemaChangeHandle implements SchemaChangeHandle {
      */
     @Override
     public void handle(JdbcConnectData connectData) throws Exception {
+        Payload payload = connectData.getPayload();
+        SourceMateData sourceMateData = payload.ofSourceMateData();
+        String sql = null;
+        if (connectData.isSchemaChanges()) {
+            //create Database
+            sql = this.dialectAssemblyLine.getDatabaseOrTableStatement(sourceMateData, payload.ofCatalogChanges(), payload.ofDdl());
+        } else if (connectData.isDataChanges()) {
+            //do handle data changes
+            sql = this.dialectAssemblyLine.getInsertStatement(sourceMateData, connectData.getSchema(), payload.ofDdl());
+        } else {
+            //not support changes
+        }
 
+        log.info("SQL={}", sql);
     }
-
-
 }

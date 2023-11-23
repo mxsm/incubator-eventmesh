@@ -23,9 +23,12 @@ import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialectFactory;
+import org.apache.eventmesh.connector.jdbc.event.SchemaChangeEvent;
 import org.apache.eventmesh.connector.jdbc.sink.config.JdbcSinkConfig;
+import org.apache.eventmesh.connector.jdbc.sink.handle.AbstractSchemaChangeHandle;
 import org.apache.eventmesh.connector.jdbc.sink.handle.DialectAssemblyLine;
 import org.apache.eventmesh.connector.jdbc.sink.handle.GeneralDialectAssemblyLine;
+import org.apache.eventmesh.connector.jdbc.sink.handle.SchemaChangeHandle;
 import org.apache.eventmesh.connector.jdbc.sink.hibernate.HibernateConfiguration;
 import org.apache.eventmesh.connector.jdbc.source.JdbcAllFactoryLoader;
 import org.apache.eventmesh.openconnect.api.config.Config;
@@ -37,6 +40,7 @@ import org.apache.eventmesh.openconnect.offsetmgmt.api.data.ConnectRecord;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +55,8 @@ public class JdbcSinkConnector implements Sink {
     private DatabaseDialect databaseDialect;
 
     private DialectAssemblyLine dialectAssemblyLine;
+
+    private SchemaChangeHandle schemaChangeHandle;
 
     /**
      * Returns the class type of the configuration for this Connector.
@@ -104,8 +110,10 @@ public class JdbcSinkConnector implements Sink {
         this.databaseDialect = databaseDialectFactory.createDatabaseDialect(this.sinkConfig.getSinkConnectorConfig().getJdbcConfig());
         this.databaseDialect.init();
 
-        this.dialectAssemblyLine = new GeneralDialectAssemblyLine(this.databaseDialect,
-            this.sessionFactory.unwrap(SessionFactoryImplementor.class).getJdbcServices().getDialect());
+        Dialect dialect = this.sessionFactory.unwrap(SessionFactoryImplementor.class).getJdbcServices().getDialect();
+        this.dialectAssemblyLine = new GeneralDialectAssemblyLine(this.databaseDialect, dialect);
+
+        this.schemaChangeHandle = new AbstractSchemaChangeHandle(databaseDialect, dialect);
 
     }
 
@@ -158,15 +166,11 @@ public class JdbcSinkConnector implements Sink {
         for (ConnectRecord record : sinkRecords) {
             Object data = record.getData();
             JdbcConnectData jdbcConnectData = JsonUtils.parseObject((byte[]) data, JdbcConnectData.class);
-
-            if (jdbcConnectData.isSchemaChanges()) {
-                //create Database
-                Payload payload = jdbcConnectData.getPayload();
-                this.dialectAssemblyLine.getDatabaseOrTableStatement(payload.ofSourceMateData(), payload.ofCatalogChanges(), payload.ofDdl());
-            } else if (jdbcConnectData.isDataChanges()) {
-                //do handle data changes
-            } else {
-                //not support changes
+            try {
+                this.schemaChangeHandle.handle(jdbcConnectData);
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
     }
