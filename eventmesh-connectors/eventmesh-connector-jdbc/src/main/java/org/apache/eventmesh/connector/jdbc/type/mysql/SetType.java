@@ -17,7 +17,7 @@ public class SetType extends AbstractType {
 
     @Override
     public List<String> ofRegistrationKeys() {
-        return Arrays.asList("SET");
+        return Arrays.asList("SET","set");
     }
 
     @Override

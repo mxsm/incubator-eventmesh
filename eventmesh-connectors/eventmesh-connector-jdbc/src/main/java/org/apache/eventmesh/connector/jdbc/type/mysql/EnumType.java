@@ -19,7 +19,7 @@ public class EnumType extends AbstractType {
 
     @Override
     public List<String> ofRegistrationKeys() {
-        return Arrays.asList("SET");
+        return Arrays.asList("enum","ENUM");
     }
 
     @Override

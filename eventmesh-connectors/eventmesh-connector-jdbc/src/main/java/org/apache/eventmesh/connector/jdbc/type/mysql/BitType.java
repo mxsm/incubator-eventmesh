@@ -27,6 +27,6 @@ public class BitType extends AbstractType {
 
     @Override
     public List<String> ofRegistrationKeys() {
-        return Arrays.asList("BIT");
+        return Arrays.asList("BIT","bit");
     }
 }
