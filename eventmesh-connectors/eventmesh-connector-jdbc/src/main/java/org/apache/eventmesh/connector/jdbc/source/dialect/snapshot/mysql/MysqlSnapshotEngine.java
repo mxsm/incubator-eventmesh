@@ -17,12 +17,14 @@
 
 package org.apache.eventmesh.connector.jdbc.source.dialect.snapshot.mysql;
 
+import org.apache.eventmesh.connector.jdbc.CatalogChanges;
 import org.apache.eventmesh.connector.jdbc.connection.mysql.MysqlJdbcConnection;
 import org.apache.eventmesh.connector.jdbc.context.mysql.MysqlOffsetContext;
 import org.apache.eventmesh.connector.jdbc.context.mysql.MysqlPartition;
 import org.apache.eventmesh.connector.jdbc.dialect.mysql.MysqlDatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.event.Event;
 import org.apache.eventmesh.connector.jdbc.event.EventConsumer;
+import org.apache.eventmesh.connector.jdbc.event.SchemaChangeEventType;
 import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
 import org.apache.eventmesh.connector.jdbc.source.config.MysqlConfig;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlConstants;
@@ -190,10 +192,17 @@ public class MysqlSnapshotEngine extends
                     return;
                 }
                 //handle default value expression
-                if(event.getJdbcConnectData().isSchemaChanges()){
-                    event.getJdbcConnectData().getPayload().getCatalogChanges().getColumns().forEach(column -> {
-                        column.setDefaultValue(defaultValueConvertor.parseDefaultValue(column, column.getDefaultValueExpression()));
-                    });
+                //handle default value expression
+                if (event.getJdbcConnectData().isSchemaChanges()) {
+
+                    CatalogChanges catalogChanges = event.getJdbcConnectData().getPayload().getCatalogChanges();
+                    SchemaChangeEventType schemaChangeEventType = SchemaChangeEventType.ofSchemaChangeEventType(catalogChanges.getType(),
+                        catalogChanges.getOperationType());
+                    if (SchemaChangeEventType.TABLE_CREATE == schemaChangeEventType || SchemaChangeEventType.TABLE_ALERT == schemaChangeEventType) {
+                        catalogChanges.getColumns().forEach(column -> {
+                            column.setDefaultValue(defaultValueConvertor.parseDefaultValue(column, column.getDefaultValueExpression()));
+                        });
+                    }
                 }
                 event.getJdbcConnectData().getPayload().withDdl(ddl).ofSourceMateData().setSnapshot(true);
                 eventQueue.put(event);

@@ -4,6 +4,11 @@ package org.apache.eventmesh.connector.jdbc.table.catalog.mysql;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.JDBCType;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.ChronoField;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -82,9 +87,21 @@ public class MysqlDefaultValueConvertorImpl implements DefaultValueConvertor {
     }
 
     private Object convertToBits(Column column, String value) {
+        //value: '101010111'
+        if(column.getColumnLength() > 1){
+            int nums = value.length() / Byte.SIZE + (value.length() % Byte.SIZE == 0 ? 0 : 1);
+            byte[] bytes = new byte[nums];
+            int length = value.length();
+            for (int i = 0; i < nums; i++) {
+                int size = value.length() - Byte.SIZE < 0 ? 0 : value.length() - Byte.SIZE;
+                bytes[nums - i - 1] = (byte) Integer.parseInt(value.substring(size, length), 2);
+                value = value.substring(0, size);
+            }
+            return bytes;
+        }
 
-
-        return null;
+        //value: '1' or '0' parse to boolean
+        return Short.parseShort(value) != 0;
     }
 
     private Object convertToDuration(Column column, String value) {
@@ -97,12 +114,35 @@ public class MysqlDefaultValueConvertorImpl implements DefaultValueConvertor {
     }
 
     private Object convertToLocalDateTime(Column column, String value) {
-        return null;
+        //The TIMESTAMP data type is used for values that contain both date and time parts.
+        // TIMESTAMP has a range of '1970-01-01 00:00:01' UTC to '2038-01-19 03:14:07' UTC.
+
+        return LocalDateTime.from(timestampFormat(Optional.ofNullable(column.getColumnLength()).orElse(0L).intValue()).parse(value));
     }
 
     private Object convert2LocalDate(Column column, String value) {
-        return null;
+        //The DATE type is used for values with a date part but no time part.
+        // MySQL retrieves and displays DATE values in 'YYYY-MM-DD' format.
+        // The supported range is '1000-01-01' to '9999-12-31'.
+
+        return LocalDate.parse(value);
     }
 
+
+    private DateTimeFormatter timestampFormat(int length) {
+        final DateTimeFormatterBuilder dtf = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd")
+            .optionalStart()
+            .appendLiteral(" ")
+            .append(DateTimeFormatter.ISO_LOCAL_TIME)
+            .optionalEnd()
+            .parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
+            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
+            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0);
+        if (length > 0) {
+            dtf.appendFraction(ChronoField.MICRO_OF_SECOND, 0, length, true);
+        }
+        return dtf.toFormatter();
+    }
 
 }

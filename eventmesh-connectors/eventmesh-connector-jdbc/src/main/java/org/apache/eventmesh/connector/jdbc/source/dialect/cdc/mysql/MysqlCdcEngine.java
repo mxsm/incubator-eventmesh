@@ -19,6 +19,7 @@ package org.apache.eventmesh.connector.jdbc.source.dialect.cdc.mysql;
 
 import org.apache.eventmesh.common.EventMeshThreadFactory;
 import org.apache.eventmesh.common.utils.LogUtils;
+import org.apache.eventmesh.connector.jdbc.CatalogChanges;
 import org.apache.eventmesh.connector.jdbc.DataChanges;
 import org.apache.eventmesh.connector.jdbc.DataChanges.Builder;
 import org.apache.eventmesh.connector.jdbc.Field;
@@ -31,6 +32,7 @@ import org.apache.eventmesh.connector.jdbc.event.DeleteDataEvent;
 import org.apache.eventmesh.connector.jdbc.event.EventConsumer;
 import org.apache.eventmesh.connector.jdbc.event.GeneralDataChangeEvent;
 import org.apache.eventmesh.connector.jdbc.event.InsertDataEvent;
+import org.apache.eventmesh.connector.jdbc.event.SchemaChangeEventType;
 import org.apache.eventmesh.connector.jdbc.event.UpdateDataEvent;
 import org.apache.eventmesh.connector.jdbc.source.config.JdbcSourceConfig;
 import org.apache.eventmesh.connector.jdbc.source.config.MysqlConfig;
@@ -525,11 +527,18 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
         if (event == null) {
             return;
         }
-        if(event.getJdbcConnectData().isSchemaChanges()){
-            event.getJdbcConnectData().getPayload().getCatalogChanges().getColumns().forEach(column -> {
-                column.setDefaultValue(defaultValueConvertor.parseDefaultValue(column, column.getDefaultValueExpression()));
-            });
-        }
+                //handle default value expression
+                if (event.getJdbcConnectData().isSchemaChanges()) {
+
+                    CatalogChanges catalogChanges = event.getJdbcConnectData().getPayload().getCatalogChanges();
+                    SchemaChangeEventType schemaChangeEventType = SchemaChangeEventType.ofSchemaChangeEventType(catalogChanges.getType(),
+                        catalogChanges.getOperationType());
+                    if (SchemaChangeEventType.TABLE_CREATE == schemaChangeEventType || SchemaChangeEventType.TABLE_ALERT == schemaChangeEventType) {
+                        catalogChanges.getColumns().forEach(column -> {
+                            column.setDefaultValue(defaultValueConvertor.parseDefaultValue(column, column.getDefaultValueExpression()));
+                        });
+                    }
+                }
         event.getJdbcConnectData().getPayload().ofSourceMateData().setSnapshot(false);
         consumers.stream().forEach(consumer -> consumer.accept(event));
     }
