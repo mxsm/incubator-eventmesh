@@ -45,8 +45,10 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlConstants;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlJdbcContext;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlSourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.table.catalog.DefaultValueConvertor;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlDefaultValueConvertorImpl;
 import org.apache.eventmesh.connector.jdbc.table.type.Pair;
 import org.apache.eventmesh.openconnect.api.config.Config;
 
@@ -113,6 +115,8 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
     private MysqlJdbcConnection connection;
 
     private com.github.shyiko.mysql.binlog.GtidSet localGtidSet;
+
+    private DefaultValueConvertor defaultValueConvertor = new MysqlDefaultValueConvertorImpl();
 
     public MysqlCdcEngine(Config config, MysqlDatabaseDialect databaseDialect) {
         super((JdbcSourceConfig) config, databaseDialect);
@@ -520,6 +524,11 @@ public class MysqlCdcEngine extends AbstractCdcEngine<MysqlAntlr4DdlParser, Mysq
     private void handleDdlEvent(org.apache.eventmesh.connector.jdbc.event.Event event) {
         if (event == null) {
             return;
+        }
+        if(event.getJdbcConnectData().isSchemaChanges()){
+            event.getJdbcConnectData().getPayload().getCatalogChanges().getColumns().forEach(column -> {
+                column.setDefaultValue(defaultValueConvertor.parseDefaultValue(column, column.getDefaultValueExpression()));
+            });
         }
         event.getJdbcConnectData().getPayload().ofSourceMateData().setSnapshot(false);
         consumers.stream().forEach(consumer -> consumer.accept(event));

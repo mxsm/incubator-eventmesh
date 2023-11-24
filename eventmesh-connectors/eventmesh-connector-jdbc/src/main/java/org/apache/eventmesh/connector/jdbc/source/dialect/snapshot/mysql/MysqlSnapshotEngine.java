@@ -29,7 +29,9 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlConstants;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDialectSql;
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlJdbcContext;
 import org.apache.eventmesh.connector.jdbc.source.dialect.snapshot.AbstractSnapshotEngine;
+import org.apache.eventmesh.connector.jdbc.table.catalog.DefaultValueConvertor;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlDefaultValueConvertorImpl;
 import org.apache.eventmesh.connector.jdbc.utils.MysqlUtils;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,6 +61,8 @@ public class MysqlSnapshotEngine extends
     private List<EventConsumer> consumers = new ArrayList<>(16);
 
     private MysqlJdbcConnection connection;
+
+    private DefaultValueConvertor defaultValueConvertor = new MysqlDefaultValueConvertorImpl();
 
     public MysqlSnapshotEngine(JdbcSourceConfig jdbcSourceConfig, MysqlDatabaseDialect databaseDialect, MysqlJdbcContext jdbcContext) {
         super(jdbcSourceConfig, databaseDialect, jdbcContext, jdbcContext.getPartition(), jdbcContext.getOffsetContext());
@@ -184,6 +188,12 @@ public class MysqlSnapshotEngine extends
             try {
                 if (event == null) {
                     return;
+                }
+                //handle default value expression
+                if(event.getJdbcConnectData().isSchemaChanges()){
+                    event.getJdbcConnectData().getPayload().getCatalogChanges().getColumns().forEach(column -> {
+                        column.setDefaultValue(defaultValueConvertor.parseDefaultValue(column, column.getDefaultValueExpression()));
+                    });
                 }
                 event.getJdbcConnectData().getPayload().withDdl(ddl).ofSourceMateData().setSnapshot(true);
                 eventQueue.put(event);
