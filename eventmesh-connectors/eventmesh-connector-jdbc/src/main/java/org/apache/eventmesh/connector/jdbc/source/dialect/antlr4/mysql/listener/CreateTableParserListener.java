@@ -19,7 +19,6 @@ package org.apache.eventmesh.connector.jdbc.source.dialect.antlr4.mysql.listener
 
 import org.apache.eventmesh.connector.jdbc.CatalogChanges;
 import org.apache.eventmesh.connector.jdbc.Payload;
-import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser.AutoIncrementColumnConstraintContext;
 import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser.ColumnCreateTableContext;
 import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser.CopyCreateTableContext;
 import org.apache.eventmesh.connector.jdbc.antlr4.autogeneration.MySqlParser.DecimalLiteralContext;
@@ -35,8 +34,8 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.antlr4.mysql.MysqlAntl
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlSourceMateData;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlOptions.MysqlTableOptions;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlTableEditor;
-import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlTableOptions;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlTableSchema;
 import org.apache.eventmesh.connector.jdbc.utils.Antlr4Utils;
 

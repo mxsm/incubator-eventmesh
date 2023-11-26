@@ -80,6 +80,8 @@ public abstract class AbstractColumnEditorImpl<CE extends ColumnEditor, Col exte
 
     private List<String> enumValues;
 
+    private Options options;
+
     public AbstractColumnEditorImpl(String name) {
         this.name = name;
     }
@@ -273,6 +275,35 @@ public abstract class AbstractColumnEditorImpl<CE extends ColumnEditor, Col exte
         return (CE) this;
     }
 
+    /**
+     * @param key
+     * @param value
+     * @return
+     */
+    @Override
+    public CE withOption(String key, Object value) {
+        if(options == null){
+            this.options = new Options();
+        }
+        this.options.put(key, value);
+        return (CE) this;
+    }
+
+    /**
+     * @param options
+     * @return
+     */
+    @Override
+    public CE withOptions(Options options) {
+        if (options != null) {
+            if(this.options == null){
+                this.options = new Options();
+            }
+            this.options.putAll(options);
+        }
+        return (CE) this;
+    }
+
     public EventMeshDataType ofEventMeshDataType() {
         return eventMeshDataType;
     }
@@ -323,5 +354,9 @@ public abstract class AbstractColumnEditorImpl<CE extends ColumnEditor, Col exte
 
     public List<String> ofEnumValues() {
         return this.enumValues;
+    }
+
+    public Options ofOptions() {
+        return this.options;
     }
 }

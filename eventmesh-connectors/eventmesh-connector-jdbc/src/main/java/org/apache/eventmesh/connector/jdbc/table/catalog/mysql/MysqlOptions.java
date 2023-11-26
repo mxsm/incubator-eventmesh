@@ -17,15 +17,28 @@
 
 package org.apache.eventmesh.connector.jdbc.table.catalog.mysql;
 
-public class MysqlTableOptions {
+public class MysqlOptions {
 
-    public static String ENGINE = "ENGINE";
+    public static final class MysqlTableOptions {
 
-    public static String AUTO_INCREMENT = "AUTO_INCREMENT";
+        public static String ENGINE = "ENGINE";
 
-    public static String CHARSET = "CHARSET";
+        public static String AUTO_INCREMENT = "AUTO_INCREMENT";
 
-    public static String COLLATE = "COLLATE";
+        public static String CHARSET = "CHARSET";
 
-    public static String COMMENT = "COMMENT";
+        public static String COLLATE = "COLLATE";
+
+        public static String COMMENT = "COMMENT";
+    }
+
+    public static final class MysqlColumnOptions {
+
+        public static String SIGNED = "SIGNED";
+
+        public static String UNSIGNED = "UNSIGNED";
+
+        public static String ZEROFILL = "ZEROFILL";
+    }
+
 }

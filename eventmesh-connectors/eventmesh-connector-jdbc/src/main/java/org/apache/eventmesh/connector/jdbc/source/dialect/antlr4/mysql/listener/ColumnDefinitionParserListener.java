@@ -39,9 +39,11 @@ import org.apache.eventmesh.connector.jdbc.source.dialect.antlr4.mysql.MysqlAntl
 import org.apache.eventmesh.connector.jdbc.source.dialect.mysql.MysqlDataTypeConvertor;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableEditor;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumnEditor;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlOptions.MysqlColumnOptions;
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 import org.apache.eventmesh.connector.jdbc.utils.JdbcStringUtils;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -143,6 +145,15 @@ public class ColumnDefinitionParserListener extends MySqlParserBaseListener {
                         this.columnEditor.scale(Integer.parseInt(decimalLiteralContexts.get(1).getText()));
                     }
                 }
+                if (CollectionUtils.isNotEmpty(dimensionDataTypeCtx.SIGNED())) {
+                    this.columnEditor.withOption(MysqlColumnOptions.SIGNED, dimensionDataTypeCtx.SIGNED().get(0).getText());
+                }
+                if (CollectionUtils.isNotEmpty(dimensionDataTypeCtx.UNSIGNED())) {
+                    this.columnEditor.withOption(MysqlColumnOptions.UNSIGNED, dimensionDataTypeCtx.UNSIGNED().get(0).getText());
+                }
+                if (CollectionUtils.isNotEmpty(dimensionDataTypeCtx.ZEROFILL())) {
+                    this.columnEditor.withOption(MysqlColumnOptions.ZEROFILL, dimensionDataTypeCtx.ZEROFILL().get(0).getText());
+                }
             } else if (dataTypeContext instanceof SimpleDataTypeContext) {
                 // Do nothing for example: DATE, TINYBLOB, etc.
                 SimpleDataTypeContext simpleDataTypeCtx = (SimpleDataTypeContext) dataTypeContext;
@@ -169,8 +180,8 @@ public class ColumnDefinitionParserListener extends MySqlParserBaseListener {
             //handle enum and set type values
             if (StringUtils.equalsAnyIgnoreCase(dataTypeString, "ENUM", "SET")) {
                 CollectionDataTypeContext collectionDataTypeContext = (CollectionDataTypeContext) dataTypeContext;
-                List<String> values = collectionDataTypeContext.collectionOptions().STRING_LITERAL().stream().map(node -> JdbcStringUtils.withoutWrapper(node.getText()))
-                    .collect(Collectors.toList());
+                List<String> values = collectionDataTypeContext.collectionOptions().STRING_LITERAL().stream()
+                    .map(node -> JdbcStringUtils.withoutWrapper(node.getText())).collect(Collectors.toList());
                 columnEditor.enumValues(values);
             }
 

@@ -142,7 +142,7 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
         sqlAssembler.appendSqlSliceOfColumns(", ", columns, column -> column.getName());
         sqlAssembler.appendSqlSlice(") VALUES (");
         //assemble values
-        
+
         sqlAssembler.appendSqlSliceOfColumns(", ", columns,
             column -> getDmlBindingValue(column));
         sqlAssembler.appendSqlSlice(")");
@@ -197,7 +197,7 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
             builder.append(((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedText(columnName));
             //assemble column type
             Column column = columnMap.get(columnName);
-            String typeName = this.databaseDialect.getTypeName(hibernateDialect,column);
+            String typeName = this.databaseDialect.getTypeName(hibernateDialect, column);
             builder.append(" ").append(typeName);
 
             builder.append(" ").append(this.databaseDialect.getCharsetOrCollateFormatted(column));
@@ -211,7 +211,7 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
                     builder.append(" NOT NULL ");
                 }
             }
-            builder.append(" ").append(this.databaseDialect.getDefaultValueFormatted(column));
+            addColumnDefaultValue(column, builder);
             builder.append(" ").append(this.databaseDialect.getCommentFormatted(column));
             //assemble column default value
             return builder.toString();
@@ -224,6 +224,16 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
         assembler.appendSqlSlice(")");
         assembler.appendSqlSlice(this.databaseDialect.getTableOptionsFormatted(catalogChanges.getTable()));
         return assembler.confirm();
+    }
+
+    private void addColumnDefaultValue(Column<?> column, StringBuilder builder) {
+        if(column.isNotNull() && column.getDefaultValue() == null){
+            return;
+        }
+        final String defaultValueFormatted = this.databaseDialect.getDefaultValueFormatted(column);
+        if (StringUtils.isNotEmpty(defaultValueFormatted)) {
+            builder.append(" DEFAULT ").append(defaultValueFormatted);
+        }
     }
 
     private String assembleDropTableSql(CatalogChanges catalogChanges) {

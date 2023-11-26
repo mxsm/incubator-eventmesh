@@ -37,10 +37,12 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumn;
-import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlTableOptions;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlOptions;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlOptions.MysqlTableOptions;
 import org.apache.eventmesh.connector.jdbc.type.Type;
 import org.apache.eventmesh.connector.jdbc.type.mysql.BitType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.EnumType;
+import org.apache.eventmesh.connector.jdbc.type.mysql.IntType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.JsonType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.SetType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.TinyIntType;
@@ -103,6 +105,7 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
         registerType(EnumType.INSTANCE);
         registerType(TinyIntType.INSTANCE);
         registerType(JsonType.INSTANCE);
+        registerType(IntType.INSTANCE);
     }
 
     @Override
@@ -365,8 +368,7 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
     public String getDefaultValueFormatted(Column<?> column) {
         Type type = this.getType(column);
         String defaultValue = type.getDefaultValue(this, column);
-        StringBuilder builder = new StringBuilder();
-        return builder.append(" DEFAULT ").append(defaultValue).toString();
+        return defaultValue;
     }
 
     @Override

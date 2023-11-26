@@ -138,6 +138,10 @@ public interface ColumnEditor<CE extends ColumnEditor, Col extends Column> {
 
     CE enumValues(List<String> enumValues);
 
+    CE withOption(String key, Object value);
+
+    CE withOptions(Options options);
+
     /**
      * Builds and returns the configured column.
      *

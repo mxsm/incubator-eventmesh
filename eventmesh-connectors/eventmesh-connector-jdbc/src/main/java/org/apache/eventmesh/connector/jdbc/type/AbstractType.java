@@ -28,7 +28,7 @@ import org.hibernate.dialect.Dialect;
 
 public abstract class AbstractType<T> implements EventMeshDataType<T> {
 
-    private Dialect hibernateDialect;
+    protected Dialect hibernateDialect;
 
     private final Class<T> typeClass;
 

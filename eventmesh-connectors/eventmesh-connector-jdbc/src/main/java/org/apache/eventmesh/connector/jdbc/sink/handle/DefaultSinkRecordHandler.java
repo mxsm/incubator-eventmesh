@@ -20,10 +20,11 @@ package org.apache.eventmesh.connector.jdbc.sink.handle;
 import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
 import org.apache.eventmesh.connector.jdbc.Payload;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
+import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
+
+import org.hibernate.dialect.Dialect;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
-import org.hibernate.dialect.Dialect;
 
 @Slf4j
 public class DefaultSinkRecordHandler implements SinkRecordHandler {

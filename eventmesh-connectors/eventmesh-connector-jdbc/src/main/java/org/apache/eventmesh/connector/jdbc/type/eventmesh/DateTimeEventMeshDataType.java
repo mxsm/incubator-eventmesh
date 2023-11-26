@@ -20,7 +20,6 @@ package org.apache.eventmesh.connector.jdbc.type.eventmesh;
 import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
 import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;

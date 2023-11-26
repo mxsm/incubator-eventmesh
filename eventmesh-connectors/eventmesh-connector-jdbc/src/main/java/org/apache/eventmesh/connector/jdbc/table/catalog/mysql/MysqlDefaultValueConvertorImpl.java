@@ -1,6 +1,11 @@
 package org.apache.eventmesh.connector.jdbc.table.catalog.mysql;
 
 
+import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.table.catalog.DefaultValueConvertor;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.JDBCType;
@@ -14,9 +19,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
-import org.apache.eventmesh.connector.jdbc.table.catalog.DefaultValueConvertor;
 
 public class MysqlDefaultValueConvertorImpl implements DefaultValueConvertor {
 
