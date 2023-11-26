@@ -15,20 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.sink.handle;
+package org.apache.eventmesh.connector.jdbc.type.eventmesh;
 
-import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
+import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
+import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
-/**
- * This interface represents a schema change handler.
- */
-public interface SchemaChangeHandle {
+import java.util.Arrays;
+import java.util.List;
+
+public class Int16EventMeshDataType extends AbstractType<Short> {
+
+    public static final Int16EventMeshDataType INSTANCE = new Int16EventMeshDataType();
+
+    private Int16EventMeshDataType() {
+        super(Short.class, SQLType.SMALLINT, "INT16");
+    }
 
     /**
-     * Handles a schema change using the specified JDBC connection data.
-     *
-     * @param connectData the JDBC connection data
+     * @return
      */
-    void handle(JdbcConnectData connectData) throws Exception;
+    @Override
+    public List<String> ofRegistrationKeys() {
+        return Arrays.asList(getName(),"int16","shot","SHORT","Short");
+    }
+
 
 }

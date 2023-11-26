@@ -169,7 +169,7 @@ public class ColumnDefinitionParserListener extends MySqlParserBaseListener {
             //handle enum and set type values
             if (StringUtils.equalsAnyIgnoreCase(dataTypeString, "ENUM", "SET")) {
                 CollectionDataTypeContext collectionDataTypeContext = (CollectionDataTypeContext) dataTypeContext;
-                List<String> values = collectionDataTypeContext.collectionOptions().STRING_LITERAL().stream().map(node -> node.getText())
+                List<String> values = collectionDataTypeContext.collectionOptions().STRING_LITERAL().stream().map(node -> JdbcStringUtils.withoutWrapper(node.getText()))
                     .collect(Collectors.toList());
                 columnEditor.enumValues(values);
             }

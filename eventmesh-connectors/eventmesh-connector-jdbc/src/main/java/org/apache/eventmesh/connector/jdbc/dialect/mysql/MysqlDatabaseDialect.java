@@ -37,6 +37,7 @@ import org.apache.eventmesh.connector.jdbc.table.catalog.Table;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableSchema;
 import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlColumn;
+import org.apache.eventmesh.connector.jdbc.table.catalog.mysql.MysqlTableOptions;
 import org.apache.eventmesh.connector.jdbc.type.Type;
 import org.apache.eventmesh.connector.jdbc.type.mysql.BitType;
 import org.apache.eventmesh.connector.jdbc.type.mysql.EnumType;
@@ -362,17 +363,10 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
 
     @Override
     public String getDefaultValueFormatted(Column<?> column) {
+        Type type = this.getType(column);
+        String defaultValue = type.getDefaultValue(this, column);
         StringBuilder builder = new StringBuilder();
-        String defaultValueExpression = column.getDefaultValueExpression();
-        if (StringUtils.isNotBlank(defaultValueExpression)) {
-            builder.append(" DEFAULT ").append(column.getDefaultValueExpression());
-            return builder.toString();
-        }
-        Type type = getType(column);
-        if (null == type && column.getDefaultValue() == null) {
-            return builder.append(" DEFAULT NULL ").toString();
-        }
-        return builder.append(" DEFAULT ").append(type.getDefaultValue(this, column)).toString();
+        return builder.append(" DEFAULT ").append(defaultValue).toString();
     }
 
     @Override
@@ -395,23 +389,23 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
 
         Options options = table.getOptions();
         if (Objects.isNull(options) || options.isEmpty()) {
-            return "";
+            return EMPTY_STRING;
         }
         StringBuilder builder = new StringBuilder();
-        String engine = (String) options.get("ENGINE");
+        String engine = (String) options.get(MysqlTableOptions.ENGINE);
         if (StringUtils.isNotBlank(engine)) {
             builder.append(String.format("ENGINE=%s ", engine));
         }
-        String autoIncrementNumber = (String) options.get("AUTO_INCREMENT");
+        String autoIncrementNumber = (String) options.get(MysqlTableOptions.AUTO_INCREMENT);
         if (StringUtils.isNotBlank(autoIncrementNumber)) {
             builder.append(String.format("AUTO_INCREMENT=%s ", autoIncrementNumber));
         }
-        String charset = (String) options.get("CHARSET");
+        String charset = (String) options.get(MysqlTableOptions.CHARSET);
         if (StringUtils.isNotBlank(charset)) {
             builder.append(String.format("DEFAULT CHARSET=%s ", charset));
         }
 
-        String collate = (String) options.get("COLLATE");
+        String collate = (String) options.get(MysqlTableOptions.COLLATE);
         if (StringUtils.isNotBlank(collate)) {
             builder.append(String.format(" COLLATE=%s ", collate));
         }
@@ -421,5 +415,17 @@ public class MysqlDatabaseDialect extends AbstractGeneralDatabaseDialect<MysqlJd
             builder.append(String.format(" COMMENT='%s' ", comment));
         }
         return builder.toString();
+    }
+
+    /**
+     * @param column
+     * @return
+     */
+    @Override
+    public String getCommentFormatted(Column<?> column) {
+        if (StringUtils.isEmpty(column.getComment())) {
+            return EMPTY_STRING;
+        }
+        return "COMMENT '" + column.getComment() + "'";
     }
 }

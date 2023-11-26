@@ -21,6 +21,20 @@ import org.apache.eventmesh.connector.jdbc.DataTypeConvertor;
 import org.apache.eventmesh.connector.jdbc.exception.DataTypeConvertException;
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.BooleanEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.BytesEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.DateEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.DateTimeEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.DecimalEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Float32EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Float64EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int16EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int32EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int64EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int8EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.NullEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.StringEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.TimeEventMeshDataType;
 
 import java.sql.JDBCType;
 import java.util.Map;
@@ -61,7 +75,7 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
      * @throws DataTypeConvertException If the conversion fails.
      */
     @Override
-    public EventMeshDataType toEventMeshType(String connectorDataType) throws DataTypeConvertException {
+    public EventMeshDataType<?> toEventMeshType(String connectorDataType) throws DataTypeConvertException {
         MysqlType mysqlType = MysqlType.getByName(connectorDataType);
         return toEventMeshType(mysqlType, null);
     }
@@ -75,7 +89,7 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
      * @throws DataTypeConvertException if there is an error during conversion
      */
     @Override
-    public EventMeshDataType toEventMeshType(JDBCType jdbcType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException {
+    public EventMeshDataType<?> toEventMeshType(JDBCType jdbcType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException {
         return toEventMeshType(MysqlType.getByJdbcType(jdbcType.getVendorTypeNumber()), dataTypeProperties);
     }
 
@@ -88,55 +102,55 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
      * @throws DataTypeConvertException If the conversion fails.
      */
     @Override
-    public EventMeshDataType toEventMeshType(MysqlType connectorDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException {
+    public EventMeshDataType<?> toEventMeshType(MysqlType connectorDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException {
 
         Objects.requireNonNull(connectorDataType, "MysqlType can't be null");
 
         switch (connectorDataType) {
             case NULL:
-                return EventMeshDataType.VOID_TYPE;
+                return NullEventMeshDataType.INSTANCE;
             case BOOLEAN:
-                return EventMeshDataType.BOOLEAN_TYPE;
+                return BooleanEventMeshDataType.INSTANCE;
             case BIT: {
                 /**
                  *  @see <a href="https://dev.mysql.com/doc/refman/8.0/en/bit-type.html">Mysql doc</a>
                  */
                 if (null == dataTypeProperties) {
-                    return EventMeshDataType.BYTES_TYPE;
+                    return BytesEventMeshDataType.INSTANCE;
                 }
                 Integer precision = (Integer) dataTypeProperties.get(MysqlDataTypeConvertor.PRECISION);
                 if (precision != null && precision == 1) {
-                    return EventMeshDataType.BOOLEAN_TYPE;
+                    return BooleanEventMeshDataType.INSTANCE;
                 }
-                return EventMeshDataType.BYTES_TYPE;
+                return BytesEventMeshDataType.INSTANCE;
             }
             case TINYINT:
-                return EventMeshDataType.BYTE_TYPE;
+                return Int8EventMeshDataType.INSTANCE;
             case TINYINT_UNSIGNED:
             case SMALLINT:
-                return EventMeshDataType.SHORT_TYPE;
+                return Int16EventMeshDataType.INSTANCE;
             case SMALLINT_UNSIGNED:
             case INT:
             case MEDIUMINT:
             case MEDIUMINT_UNSIGNED:
-                return EventMeshDataType.INT_TYPE;
+                return Int32EventMeshDataType.INSTANCE;
             case INT_UNSIGNED:
             case BIGINT:
-                return EventMeshDataType.LONG_TYPE;
+                return Int64EventMeshDataType.INSTANCE;
             case FLOAT:
             case FLOAT_UNSIGNED:
-                return EventMeshDataType.FLOAT_TYPE;
+                return Float32EventMeshDataType.INSTANCE;
             case DOUBLE:
             case DOUBLE_UNSIGNED:
-                return EventMeshDataType.DOUBLE_TYPE;
+                return Float64EventMeshDataType.INSTANCE;
             case TIME:
-                return EventMeshDataType.LOCAL_TIME_TYPE;
+                return TimeEventMeshDataType.INSTANCE;
             case YEAR:
             case DATE:
-                return EventMeshDataType.LOCAL_DATE_TYPE;
+                return DateEventMeshDataType.INSTANCE;
             case TIMESTAMP:
             case DATETIME:
-                return EventMeshDataType.LOCAL_DATE_TIME_TYPE;
+                return DateTimeEventMeshDataType.INSTANCE;
             case CHAR:
             case VARCHAR:
             case TINYTEXT:
@@ -146,7 +160,7 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
             case JSON:
             case ENUM:
             case SET:
-                return EventMeshDataType.STRING_TYPE;
+                return StringEventMeshDataType.INSTANCE;
             case BINARY:
             case VARBINARY:
             case TINYBLOB:
@@ -154,7 +168,7 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
             case MEDIUMBLOB:
             case LONGBLOB:
             case GEOMETRY:
-                return EventMeshDataType.BYTES_TYPE;
+                return BytesEventMeshDataType.INSTANCE;
             case BIGINT_UNSIGNED:
             case DECIMAL:
             case DECIMAL_UNSIGNED: {
@@ -167,7 +181,7 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
                 Integer precision = (Integer) dataTypeProperties.getOrDefault(PRECISION, DEFAULT_PRECISION);
                 Integer scale = (Integer) dataTypeProperties.getOrDefault(SCALE, DEFAULT_SCALE);
                 return new DecimalType(precision, scale);*/
-                return EventMeshDataType.BIG_DECIMAL_TYPE;
+                return DecimalEventMeshDataType.INSTANCE;
             }
             default:
                 throw new DataTypeConvertException(String.format("%s type is not supported", connectorDataType.getName()));
@@ -183,7 +197,7 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
      * @throws DataTypeConvertException If the conversion fails.
      */
     @Override
-    public MysqlType toConnectorType(EventMeshDataType eventMeshDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException {
+    public MysqlType toConnectorType(EventMeshDataType<?> eventMeshDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException {
 
         Objects.requireNonNull(eventMeshDataType, "Parameter eventMeshDataType can not be null");
         SQLType sqlType = eventMeshDataType.getSQLType();
@@ -216,8 +230,6 @@ public class MysqlDataTypeConvertor implements DataTypeConvertor<MysqlType> {
             case TIMESTAMP:
                 return MysqlType.TIMESTAMP;
             case ARRAY:
-            case MAP:
-            case ROW:
             case STRING:
                 return MysqlType.VARCHAR;
             default:

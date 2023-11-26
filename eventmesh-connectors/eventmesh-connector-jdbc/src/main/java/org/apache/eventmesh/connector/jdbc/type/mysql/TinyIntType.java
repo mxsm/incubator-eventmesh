@@ -17,33 +17,36 @@
 
 package org.apache.eventmesh.connector.jdbc.type.mysql;
 
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
 import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class TinyIntType extends AbstractType {
+public class TinyIntType extends AbstractType<Byte> {
 
     public static final TinyIntType INSTANCE = new TinyIntType();
+
+    public TinyIntType() {
+        super(Byte.class, SQLType.TINYINT, "TINYINT");
+    }
 
     /**
      * @return
      */
     @Override
     public List<String> ofRegistrationKeys() {
-        return Arrays.asList("TINYINT");
+        return Arrays.asList(getName(), "tinyint");
     }
 
     /**
-     * @param databaseDialect
      * @param column
      * @return
      */
     @Override
-    public String getTypeName(DatabaseDialect<?> databaseDialect, Column<?> column) {
+    public String getTypeName(Column<?> column) {
 
         final int size = Optional.ofNullable(column.getColumnLength()).orElse(0L).intValue();
         if (size > 0) {

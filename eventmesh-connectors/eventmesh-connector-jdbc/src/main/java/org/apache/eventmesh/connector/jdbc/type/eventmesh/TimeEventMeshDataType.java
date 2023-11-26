@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.type.mysql;
+package org.apache.eventmesh.connector.jdbc.type.eventmesh;
 
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
-import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
 import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
-public class JsonType extends AbstractType<String> {
+public class TimeEventMeshDataType extends AbstractType<LocalTime> {
 
-    public static final JsonType INSTANCE = new JsonType();
+    public static final TimeEventMeshDataType INSTANCE = new TimeEventMeshDataType();
 
-    public JsonType() {
-        super(String.class, SQLType.STRING, "JSON");
+    private TimeEventMeshDataType() {
+        super(LocalTime.class, SQLType.TIME, "TIME");
     }
 
     /**
@@ -38,25 +37,8 @@ public class JsonType extends AbstractType<String> {
      */
     @Override
     public List<String> ofRegistrationKeys() {
-        return Arrays.asList("json", getName(), "Json");
+        return Arrays.asList(getName());
     }
 
-    /**
-     * @param column
-     * @return
-     */
-    @Override
-    public String getTypeName(Column<?> column) {
-        return "json";
-    }
 
-    /**
-     * @param databaseDialect
-     * @param column
-     * @return
-     */
-    @Override
-    public String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-        return "CAST(? AS JSON)";
-    }
 }

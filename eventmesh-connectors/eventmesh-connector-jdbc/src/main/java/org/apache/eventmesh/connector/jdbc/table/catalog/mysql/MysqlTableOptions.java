@@ -26,4 +26,6 @@ public class MysqlTableOptions {
     public static String CHARSET = "CHARSET";
 
     public static String COLLATE = "COLLATE";
+
+    public static String COMMENT = "COMMENT";
 }

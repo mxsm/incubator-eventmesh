@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.type.mysql;
+package org.apache.eventmesh.connector.jdbc.type.eventmesh;
 
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
-import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
 import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class JsonType extends AbstractType<String> {
+public class Int8EventMeshDataType extends AbstractType<Byte> {
 
-    public static final JsonType INSTANCE = new JsonType();
+    public static final Int8EventMeshDataType INSTANCE = new Int8EventMeshDataType();
 
-    public JsonType() {
-        super(String.class, SQLType.STRING, "JSON");
+    private Int8EventMeshDataType() {
+        super(Byte.class, SQLType.TINYINT, "INT8");
     }
 
     /**
@@ -38,25 +36,8 @@ public class JsonType extends AbstractType<String> {
      */
     @Override
     public List<String> ofRegistrationKeys() {
-        return Arrays.asList("json", getName(), "Json");
+        return Arrays.asList("INT8, int8");
     }
 
-    /**
-     * @param column
-     * @return
-     */
-    @Override
-    public String getTypeName(Column<?> column) {
-        return "json";
-    }
 
-    /**
-     * @param databaseDialect
-     * @param column
-     * @return
-     */
-    @Override
-    public String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-        return "CAST(? AS JSON)";
-    }
 }

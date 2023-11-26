@@ -197,7 +197,7 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
             builder.append(((AbstractGeneralDatabaseDialect<?, ?>) databaseDialect).getQualifiedText(columnName));
             //assemble column type
             Column column = columnMap.get(columnName);
-            String typeName = getTypeName(column);
+            String typeName = this.databaseDialect.getTypeName(hibernateDialect,column);
             builder.append(" ").append(typeName);
 
             builder.append(" ").append(this.databaseDialect.getCharsetOrCollateFormatted(column));
@@ -210,8 +210,9 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
                 if (column.isNotNull()) {
                     builder.append(" NOT NULL ");
                 }
-                builder.append(" ").append(this.databaseDialect.getDefaultValueFormatted(column));
             }
+            builder.append(" ").append(this.databaseDialect.getDefaultValueFormatted(column));
+            builder.append(" ").append(this.databaseDialect.getCommentFormatted(column));
             //assemble column default value
             return builder.toString();
         });
@@ -238,15 +239,5 @@ public class GeneralDialectAssemblyLine implements DialectAssemblyLine {
         SqlStatementAssembler assembler = new SqlStatementAssembler();
 
         return assembler.confirm();
-    }
-
-    protected String getTypeName(Column<?> column) {
-        Type type = this.databaseDialect.getType(column);
-        if (null != type) {
-            return type.getTypeName(this.databaseDialect, column);
-        }
-        Long length = Optional.ofNullable(column.getColumnLength()).orElse(0L);
-        return this.hibernateDialect.getTypeName(column.getJdbcType().getVendorTypeNumber(),
-            length, length.intValue(), Optional.ofNullable(column.getDecimal()).orElse(0));
     }
 }

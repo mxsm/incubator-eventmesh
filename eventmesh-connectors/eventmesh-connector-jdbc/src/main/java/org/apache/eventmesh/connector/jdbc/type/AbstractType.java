@@ -20,26 +20,75 @@ package org.apache.eventmesh.connector.jdbc.type;
 import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
 
-public abstract class AbstractType implements Type {
+import java.util.Optional;
+
+import org.hibernate.dialect.Dialect;
+
+public abstract class AbstractType<T> implements EventMeshDataType<T> {
+
+    private Dialect hibernateDialect;
+
+    private final Class<T> typeClass;
+
+    private final SQLType sqlType;
+
+    private final String name;
+
+    public AbstractType(Class<T> typeClass, SQLType sqlType, String name) {
+        this.typeClass = typeClass;
+        this.sqlType = sqlType;
+        this.name = name;
+    }
+
+    /**
+     * @param hibernateDialect
+     */
+    @Override
+    public void configure(Dialect hibernateDialect) {
+        this.hibernateDialect = hibernateDialect;
+    }
 
     @Override
+    public String getTypeName(Column<?> column) {
+        Long length = Optional.ofNullable(column.getColumnLength()).orElse(0L);
+        return hibernateDialect.getTypeName(column.getJdbcType().getVendorTypeNumber(), length, length.intValue(),
+            Optional.ofNullable(column.getDecimal()).orElse(0));
+    }
+
+    /**
+     * Returns the type class of the data.
+     *
+     * @return the type class of the data.
+     */
+    @Override
+    public Class<T> getTypeClass() {
+        return typeClass;
+    }
+
+    /**
+     * Returns the SQL type of the data.
+     *
+     * @return the SQL type of the data.
+     */
+    @Override
+    public SQLType getSQLType() {
+        return sqlType;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param databaseDialect
+     * @param column
+     * @return
+     */
+    @Override
     public String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-        Object defaultValue = column.getDefaultValue();
-        EventMeshDataType dataType = column.getDataType();
-        switch (dataType) {
-            case BYTE_TYPE:
-            case SHORT_TYPE:
-            case INT_TYPE:
-            case LONG_TYPE:
-            case FLOAT_TYPE:
-            case DOUBLE_TYPE:
-                return defaultValue.toString();
-            case BOOLEAN_TYPE:
-                return databaseDialect.getBooleanFormatted((boolean) defaultValue);
-            case STRING_TYPE:
-                return "'" + defaultValue + "'";
-        }
-        throw new IllegalArgumentException("Unsupported data type: " + dataType);
+        return column.getDefaultValue() == null ? "NULL" : column.getDefaultValue().toString();
     }
 }

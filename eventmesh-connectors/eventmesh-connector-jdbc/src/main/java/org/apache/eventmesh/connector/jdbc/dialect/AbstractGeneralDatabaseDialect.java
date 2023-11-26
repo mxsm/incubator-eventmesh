@@ -17,13 +17,26 @@
 
 package org.apache.eventmesh.connector.jdbc.dialect;
 
+import org.apache.eventmesh.common.utils.LogUtils;
 import org.apache.eventmesh.connector.jdbc.config.JdbcConfig;
 import org.apache.eventmesh.connector.jdbc.connection.JdbcConnection;
 import org.apache.eventmesh.connector.jdbc.exception.JdbcConnectionException;
 import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
 import org.apache.eventmesh.connector.jdbc.table.catalog.TableId;
-import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 import org.apache.eventmesh.connector.jdbc.type.Type;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.BooleanEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.BytesEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.DateEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.DateTimeEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.DecimalEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Float32EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Float64EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int16EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int32EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int64EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.Int8EventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.StringEventMeshDataType;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.TimeEventMeshDataType;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,6 +45,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import org.hibernate.dialect.Dialect;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -46,8 +61,18 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, 
 
     private final Map<String, Type> typeRegisters = new HashMap<>(32);
 
+    private Dialect hibernateDialect;
+
     public AbstractGeneralDatabaseDialect(JdbcConfig config) {
         this.config = config;
+    }
+
+    /**
+     * @param hibernateDialect
+     */
+    @Override
+    public void configure(Dialect hibernateDialect) {
+        this.hibernateDialect = hibernateDialect;
     }
 
     @Override
@@ -66,40 +91,73 @@ public abstract class AbstractGeneralDatabaseDialect<JC extends JdbcConnection, 
 
     @Override
     public Type getType(Column<?> column) {
-        return Optional.ofNullable(typeRegisters.get(column.getNativeType())).orElseGet(()->typeRegisters.get(column.getJdbcType().getName()));
+        final String nativeType = column.getNativeType();
+        if (nativeType != null) {
+            final Type type = typeRegisters.get(nativeType);
+            if (type != null) {
+                LogUtils.debug(log, "found type {} for column {}", type.getClass().getName(), column.getName());
+                return type;
+            }
+        }
+        final String dataTypeName = column.getDataType().getName();
+        if (dataTypeName != null) {
+            final Type type = typeRegisters.get(dataTypeName);
+            if (type != null) {
+                LogUtils.debug(log, "found type {} for column {}", type.getClass().getName(), column.getName());
+                return type;
+            }
+        }
+
+        final String jdbcTypeName = column.getJdbcType().name();
+        if (jdbcTypeName!= null) {
+            final Type type = typeRegisters.get(jdbcTypeName);
+            if (type!= null) {
+                LogUtils.debug(log, "found type {} for column {}", type.getClass().getName(), column.getName());
+                return type;
+            }
+        }
+
+        return null;
     }
 
     protected void registerTypes() {
-        registerType(EventMeshDataType.BOOLEAN_TYPE);
-        registerType(EventMeshDataType.BOOLEAN_ARRAY_TYPE);
-        registerType(EventMeshDataType.BYTE_ARRAY_TYPE);
-        registerType(EventMeshDataType.BYTE_TYPE);
-        registerType(EventMeshDataType.BYTES_TYPE);
-        registerType(EventMeshDataType.DOUBLE_ARRAY_TYPE);
-        registerType(EventMeshDataType.DOUBLE_TYPE);
-        registerType(EventMeshDataType.FLOAT_ARRAY_TYPE);
-        registerType(EventMeshDataType.FLOAT_TYPE);
-        registerType(EventMeshDataType.INT_ARRAY_TYPE);
-        registerType(EventMeshDataType.INT_TYPE);
-        registerType(EventMeshDataType.LONG_ARRAY_TYPE);
-        registerType(EventMeshDataType.LONG_TYPE);
-        registerType(EventMeshDataType.LOCAL_DATE_TIME_TYPE);
-        registerType(EventMeshDataType.LOCAL_DATE_TYPE);
-        registerType(EventMeshDataType.LOCAL_TIME_TYPE);
-        registerType(EventMeshDataType.SHORT_ARRAY_TYPE);
-        registerType(EventMeshDataType.SHORT_TYPE);
-        registerType(EventMeshDataType.STRING_ARRAY_TYPE);
-        registerType(EventMeshDataType.STRING_TYPE);
-        registerType(EventMeshDataType.VOID_TYPE);
+        registerType(BooleanEventMeshDataType.INSTANCE);
+        registerType(Float32EventMeshDataType.INSTANCE);
+        registerType(Float64EventMeshDataType.INSTANCE);
+        registerType(Int8EventMeshDataType.INSTANCE);
+        registerType(Int16EventMeshDataType.INSTANCE);
+        registerType(Int32EventMeshDataType.INSTANCE);
+        registerType(Int64EventMeshDataType.INSTANCE);
+        registerType(StringEventMeshDataType.INSTANCE);
+        registerType(DateEventMeshDataType.INSTANCE);
+        registerType(TimeEventMeshDataType.INSTANCE);
+        registerType(DateTimeEventMeshDataType.INSTANCE);
+        registerType(DecimalEventMeshDataType.INSTANCE);
+        registerType(BytesEventMeshDataType.INSTANCE);
     }
 
     protected void registerType(Type type) {
-        Optional.ofNullable(type.ofRegistrationKeys()).orElse(new ArrayList<>(0)).forEach(key -> {
-            typeRegisters.put(key, type);
-        });
+        type.configure(hibernateDialect);
+        Optional.ofNullable(type.ofRegistrationKeys()).orElse(new ArrayList<>(0)).forEach(key -> typeRegisters.put(key, type));
     }
 
     public abstract String getQualifiedTableName(TableId tableId);
 
     public abstract String getQualifiedText(String text);
+
+    /**
+     * @param hibernateDialect
+     * @param column
+     * @return
+     */
+    @Override
+    public String getTypeName(Dialect hibernateDialect, Column<?> column) {
+        Type type = this.getType(column);
+        if (null != type) {
+            return type.getTypeName(column);
+        }
+        Long length = Optional.ofNullable(column.getColumnLength()).orElse(0L);
+        return hibernateDialect.getTypeName(column.getJdbcType().getVendorTypeNumber(), length, length.intValue(),
+            Optional.ofNullable(column.getDecimal()).orElse(0));
+    }
 }

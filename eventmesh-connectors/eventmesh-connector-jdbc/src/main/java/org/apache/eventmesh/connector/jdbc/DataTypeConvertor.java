@@ -43,7 +43,7 @@ public interface DataTypeConvertor<T> {
      * @return The converted EventMesh data type.
      * @throws DataTypeConvertException If the conversion fails.
      */
-    EventMeshDataType toEventMeshType(String connectorDataType) throws DataTypeConvertException;
+    EventMeshDataType<?> toEventMeshType(String connectorDataType) throws DataTypeConvertException;
 
     /**
      * Converts JDBCType and dataTypeProperties to EventMeshDataType.
@@ -53,7 +53,7 @@ public interface DataTypeConvertor<T> {
      * @return the converted EventMeshDataType
      * @throws DataTypeConvertException if there is an error during conversion
      */
-    EventMeshDataType toEventMeshType(JDBCType jdbcType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException;
+    EventMeshDataType<?> toEventMeshType(JDBCType jdbcType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException;
 
     /**
      * Converts a connector data type to an EventMesh data type with additional data type properties.
@@ -63,7 +63,7 @@ public interface DataTypeConvertor<T> {
      * @return The converted EventMesh data type.
      * @throws DataTypeConvertException If the conversion fails.
      */
-    EventMeshDataType toEventMeshType(T connectorDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException;
+    EventMeshDataType<?> toEventMeshType(T connectorDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException;
 
     /**
      * Converts an EventMesh data type to a connector data type with additional data type properties.
@@ -73,5 +73,5 @@ public interface DataTypeConvertor<T> {
      * @return The converted connector data type.
      * @throws DataTypeConvertException If the conversion fails.
      */
-    T toConnectorType(EventMeshDataType eventMeshDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException;
+    T toConnectorType(EventMeshDataType<?> eventMeshDataType, Map<String, Object> dataTypeProperties) throws DataTypeConvertException;
 }

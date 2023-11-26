@@ -2,6 +2,7 @@ package org.apache.eventmesh.connector.jdbc.table.catalog;
 
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshDataType;
 import org.apache.eventmesh.connector.jdbc.table.type.EventMeshTypeNameConverter;
+import org.apache.eventmesh.connector.jdbc.type.eventmesh.NullEventMeshDataType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +31,6 @@ public class EventMeshDataTypeJsonDeserializer extends JsonDeserializer<EventMes
                 return EventMeshTypeNameConverter.ofEventMeshDataType(value);
             }
         }
-        return EventMeshDataType.VOID_TYPE;
+        return NullEventMeshDataType.INSTANCE;
     }
 }

@@ -15,16 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.dialect.mysql;
+package org.apache.eventmesh.connector.jdbc.type.eventmesh;
 
-import org.apache.eventmesh.connector.jdbc.sink.handle.AbstractSchemaChangeHandle;
+import org.apache.eventmesh.connector.jdbc.table.type.SQLType;
+import org.apache.eventmesh.connector.jdbc.type.AbstractType;
 
-public class MysqlSchemaChangeHandle extends AbstractSchemaChangeHandle {
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
 
-    private MysqlDatabaseDialect databaseDialect;
+public class DateEventMeshDataType extends AbstractType<LocalDate> {
 
-    public MysqlSchemaChangeHandle(MysqlDatabaseDialect databaseDialect) {
-        this.databaseDialect = databaseDialect;
+    public static final DateEventMeshDataType INSTANCE = new DateEventMeshDataType();
+
+    private DateEventMeshDataType() {
+        super(LocalDate.class, SQLType.DATE, "DATE");
     }
+
+    /**
+     * @return
+     */
+    @Override
+    public List<String> ofRegistrationKeys() {
+        return Arrays.asList(getName());
+    }
+
 
 }

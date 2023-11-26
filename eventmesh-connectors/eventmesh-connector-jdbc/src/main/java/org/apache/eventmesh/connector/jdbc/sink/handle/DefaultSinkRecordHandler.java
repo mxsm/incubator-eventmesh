@@ -26,7 +26,7 @@ import org.apache.eventmesh.connector.jdbc.source.SourceMateData;
 import org.hibernate.dialect.Dialect;
 
 @Slf4j
-public class AbstractSchemaChangeHandle implements SchemaChangeHandle {
+public class DefaultSinkRecordHandler implements SinkRecordHandler {
 
     protected DatabaseDialect eventMeshDialect;
 
@@ -34,7 +34,7 @@ public class AbstractSchemaChangeHandle implements SchemaChangeHandle {
 
     protected DialectAssemblyLine dialectAssemblyLine;
 
-    public AbstractSchemaChangeHandle(DatabaseDialect eventMeshDialect, Dialect hibernateDialect) {
+    public DefaultSinkRecordHandler(DatabaseDialect eventMeshDialect, Dialect hibernateDialect) {
         this.eventMeshDialect = eventMeshDialect;
         this.hibernateDialect = hibernateDialect;
         this.dialectAssemblyLine = new GeneralDialectAssemblyLine(eventMeshDialect, hibernateDialect);
@@ -57,9 +57,8 @@ public class AbstractSchemaChangeHandle implements SchemaChangeHandle {
             //do handle data changes
             sql = this.dialectAssemblyLine.getInsertStatement(sourceMateData, connectData.getSchema(), payload.ofDdl());
         } else {
-            //not support changes
+            log.warn("Unknown connect data type: {}", connectData.getType());
         }
-
         log.info("SQL={}", sql);
     }
 }

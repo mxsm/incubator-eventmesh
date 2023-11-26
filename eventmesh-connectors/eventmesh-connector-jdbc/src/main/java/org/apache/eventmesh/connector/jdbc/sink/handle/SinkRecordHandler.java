@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.eventmesh.connector.jdbc.type;
+package org.apache.eventmesh.connector.jdbc.sink.handle;
 
-import org.apache.eventmesh.connector.jdbc.dialect.DatabaseDialect;
-import org.apache.eventmesh.connector.jdbc.table.catalog.Column;
+import org.apache.eventmesh.connector.jdbc.JdbcConnectData;
 
-import java.util.List;
+/**
+ * This interface represents a schema change handler.
+ */
+public interface SinkRecordHandler {
 
-import org.hibernate.dialect.Dialect;
+    /**
+     * Handles a schema change using the specified JDBC connection data.
+     *
+     * @param connectData the JDBC connection data
+     */
+    void handle(JdbcConnectData connectData) throws Exception;
 
-public interface Type {
-
-    void configure(Dialect hibernateDialect);
-
-    List<String> ofRegistrationKeys();
-
-    String getDefaultValue(DatabaseDialect<?> databaseDialect, Column<?> column);
-
-    String getTypeName(Column<?> column);
-
-    default String getQueryBindingWithValue(DatabaseDialect<?> databaseDialect, Column<?> column) {
-        return databaseDialect.getQueryBindingWithValueCast(column);
-    }
 }
