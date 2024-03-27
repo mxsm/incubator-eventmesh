@@ -178,7 +178,7 @@ public class MysqlSnapshotEngine extends
         for (TableId tableId : determineTables) {
             StringBuilder dropTableDdl = new StringBuilder("DROP TABLE IF EXISTS ");
             dropTableDdl.append(MysqlUtils.wrapper(tableId));
-            addParseDdlAndEvent(jdbcContext, dropTableDdl.toString(), tableId);
+            parseDdlSwitch2Event(jdbcContext, dropTableDdl.toString(), tableId);
         }
         final HashMap<String/* database Name */, List<TableId>/* table list */> databaseMapTables = determineTables.stream()
             .collect(Collectors.groupingBy(TableId::getCatalogName, HashMap::new, Collectors.toList()));
@@ -186,7 +186,7 @@ public class MysqlSnapshotEngine extends
         // Read all table structures, construct DDL statements
         for (String database : databaseSet) {
             StringBuilder dropDatabaseDdl = new StringBuilder("DROP DATABASE IF EXISTS ").append(MysqlUtils.wrapper(database));
-            addParseDdlAndEvent(jdbcContext, dropDatabaseDdl.toString(), new TableId(database));
+            parseDdlSwitch2Event(jdbcContext, dropDatabaseDdl.toString(), new TableId(database));
             String databaseCreateDdl = connection.query(MysqlDialectSql.SHOW_CREATE_DATABASE.ofWrapperSQL(MysqlUtils.wrapper(database)), rs -> {
                 if (rs.next() && rs.getMetaData().getColumnCount() > 1) {
                     String ddl = rs.getString(2);
@@ -199,8 +199,8 @@ public class MysqlSnapshotEngine extends
                 continue;
             }
             TableId tableId = new TableId(database);
-            addParseDdlAndEvent(jdbcContext, databaseCreateDdl, tableId);
-            addParseDdlAndEvent(jdbcContext, "USE " + database, tableId);
+            parseDdlSwitch2Event(jdbcContext, databaseCreateDdl, tableId);
+            parseDdlSwitch2Event(jdbcContext, "USE " + database, tableId);
 
             // build create table snapshot event
             List<TableId> tableIds = databaseMapTables.get(database);
@@ -208,7 +208,7 @@ public class MysqlSnapshotEngine extends
         }
     }
 
-    private void addParseDdlAndEvent(MysqlJdbcContext jdbcContext, String ddl, TableId tableId) {
+    private void parseDdlSwitch2Event(MysqlJdbcContext jdbcContext, String ddl, TableId tableId) {
         jdbcContext.getParser().setCurrentDatabase(tableId.getCatalogName());
         jdbcContext.getParser().setCatalogTableSet(jdbcContext.getCatalogTableSet());
         jdbcContext.getParser().parse(ddl, event -> {
@@ -243,7 +243,7 @@ public class MysqlSnapshotEngine extends
                 if (resultSet.next()) {
                     // Get create table sql
                     String createTableDdl = resultSet.getString(2);
-                    addParseDdlAndEvent(jdbcContext, createTableDdl, tableId);
+                    parseDdlSwitch2Event(jdbcContext, createTableDdl, tableId);
                 }
             });
         }

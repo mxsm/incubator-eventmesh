@@ -34,6 +34,11 @@ public interface JdbcConnectionProvider<JC extends JdbcConnection> extends AutoC
      */
     JC getConnection();
 
+    /**
+     * Creates a new database connection.
+     *
+     * @return A new database connection.
+     */
     JC newConnection();
 
     /**

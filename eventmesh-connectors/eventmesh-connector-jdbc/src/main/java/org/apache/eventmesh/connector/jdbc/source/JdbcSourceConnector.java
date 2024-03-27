@@ -161,6 +161,7 @@ public class JdbcSourceConnector extends SourceConnector {
     public void start() throws Exception {
         this.databaseDialect.start();
         this.taskManagerCoordinator.start();
+        //start snapshot engine
         this.snapshotEngine.start();
         SnapshotResult<?> result = this.snapshotEngine.execute();
         this.snapshotEngine.close();

@@ -143,12 +143,13 @@ public abstract class AbstractSnapshotEngine<DbDialect extends DatabaseDialect<J
             //Whether to determine whether to process the table data?
             if (sourceConnectorConfig.isSnapshotData()) {
                 connectionPool = createConnectionPool(snapshotContext);
-                createDataEvents(context, snapshotContext, connectionPool);
+                handleTableDataAndCreateDataEvents(context, snapshotContext, connectionPool);
             }
             log.info("Snapshot 6: Release the locks");
             releaseSnapshotLocks(context, snapshotContext);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("Handle snapshot tables schema or data error", e);
+            return new SnapshotResult<>(SnapshotResultStatus.ABORTED, context);
         } finally {
             //close connection pool's connection
             try {
@@ -190,7 +191,7 @@ public abstract class AbstractSnapshotEngine<DbDialect extends DatabaseDialect<J
      * @param connectionPool  The connection pool.
      * @throws SQLException If an error occurs.
      */
-    private void createDataEvents(Jc context, SnapshotContext<Part, Offset> snapshotContext, Queue<JdbcConnection> connectionPool)
+    private void handleTableDataAndCreateDataEvents(Jc context, SnapshotContext<Part, Offset> snapshotContext, Queue<JdbcConnection> connectionPool)
         throws Exception {
 
         int handleDataThreadNum = connectionPool.size();
@@ -267,7 +268,7 @@ public abstract class AbstractSnapshotEngine<DbDialect extends DatabaseDialect<J
             conn.connection().setTransactionIsolation(jdbcConnection.connection().getTransactionIsolation());
             connectionPool.add(conn);
         }
-        log.info("Created connection pool with {} number", snapshotMaxThreads);
+        log.info("Create snapshot data handle thread pool with a size of {}.", snapshotMaxThreads);
         return connectionPool;
     }
 
